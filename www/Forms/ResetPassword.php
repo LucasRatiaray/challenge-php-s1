@@ -2,7 +2,7 @@
 
 namespace App\Forms;
 
-class PasswordReset
+class ResetPassword
 {
     public static function getConfig(): array
     {

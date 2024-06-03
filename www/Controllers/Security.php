@@ -112,7 +112,7 @@ class Security
 
     public function requestPasswordReset(): void
     {
-        $form = new Form("PasswordResetRequest");
+        $form = new Form("RequestPasswordReset");
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user = new User();
@@ -153,7 +153,7 @@ class Security
 
     public function resetPassword(): void
     {
-        $form = new Form("PasswordReset");
+        $form = new Form("ResetPassword");
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user = new User();
@@ -161,15 +161,15 @@ class Security
             $newPassword = $_POST['password'];
 
             if ($user->resetPassword($token, $newPassword)) {
-                echo "Password has been reset successfully.";
+                echo "Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.";
                 header("Location: /login");
                 exit();
             } else {
-                echo "Invalid token or the token has expired.";
+                echo "La réinitialisation du mot de passe a échoué. Token invalide ou expiré. Veuillez demander un nouveau lien de réinitialisation.";
             }
         }
 
-        $view = new View("Security/passwordReset");
+        $view = new View("Security/resetPassword");
         $view->assign("form", $form->build());
         $view->render();
     }
