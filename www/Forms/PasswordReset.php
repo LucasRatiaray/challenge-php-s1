@@ -2,7 +2,7 @@
 
 namespace App\Forms;
 
-class Login
+class PasswordReset
 {
     public static function getConfig(): array
     {
@@ -10,20 +10,12 @@ class Login
             "config" => [
                 "action" => "",
                 "method" => "POST",
-                "submit" => "Se connecter"
+                "submit" => "Réinitialiser le mot de passe"
             ],
             "inputs" => [
-                "email" => [
-                    "type" => "email",
-                    "min" => 8,
-                    "max" => 320,
-                    "placeholder" => "Votre email",
-                    "required" => true,
-                    "error" => "Votre email doit faire entre 8 et 320 caractères"
-                ],
                 "password" => [
                     "type" => "password",
-                    "placeholder" => "Votre mot de passe",
+                    "placeholder" => "Nouveau mot de passe",
                     "required" => true,
                     "error" => "Votre mot de passe doit faire au minimum 8 caractères avec des lettres et des chiffres"
                 ]
