@@ -1,0 +1,17 @@
+{
+    "name": "challenges1/www",
+    "autoload": {
+        "psr-4": {
+            "App\\Core\\": "Core/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Lucas Ratiaray",
+            "email": "contact.ratiaray@gmail.com"
+        }
+    ],
+    "require": {
+        "ext-pdo": "*"
+    }
+}
