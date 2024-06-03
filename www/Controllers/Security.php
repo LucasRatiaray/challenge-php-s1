@@ -58,7 +58,7 @@ class Security {
             $user->setFirstname($_POST["firstname"]);
             $user->setLastname($_POST["lastname"]);
             $user->setEmail($_POST["email"]);
-            $user->setPassword(password_hash($_POST["password"], PASSWORD_BCRYPT));
+            $user->setPassword($_POST["password"]); // Password is hashed inside the setPassword method
             $user->save();
             header("Location: /login");
             exit();

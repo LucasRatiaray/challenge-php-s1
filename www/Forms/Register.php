@@ -10,7 +10,7 @@ class Register
                 "action"=>"",
                 "method"=>"POST",
                 "submit"=>"S'inscrire"
-                ],
+            ],
             "inputs"=>[
                 "firstname"=>[
                     "type"=>"text",
