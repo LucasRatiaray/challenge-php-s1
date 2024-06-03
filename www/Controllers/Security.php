@@ -119,7 +119,7 @@ class Security
             $email = $_POST['email'];
 
             if ($user->exists($email)) {
-                // Generate a unique reset token
+                // Générer un token de réinitialisation
                 $resetToken = bin2hex(random_bytes(16));
                 $user->setResetToken($email, $resetToken);
 
