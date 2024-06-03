@@ -6,6 +6,9 @@ BEGIN;
 -- Définir le fuseau horaire
 SET TIME ZONE 'UTC';
 
+-- Supprimer la table si elle existe
+DROP TABLE IF EXISTS "chall_user";
+
 -- Créer la table `chall_user`
 CREATE TABLE IF NOT EXISTS "chall_user" (
     "id" SERIAL PRIMARY KEY,
@@ -15,7 +18,9 @@ CREATE TABLE IF NOT EXISTS "chall_user" (
     "password" VARCHAR(255) NOT NULL,
     "status" SMALLINT NOT NULL,
     "date_inserted" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "date_updated" TIMESTAMP NOT NULL DEFAULT '1970-01-01 00:00:00' -- Initialiser avec une date "nulle"
+    "date_updated" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "reset_token" VARCHAR(255) DEFAULT NULL,
+    "reset_token_expiry" TIMESTAMP DEFAULT NULL
 );
 
 -- Définir un déclencheur pour mettre à jour la colonne `date_updated`

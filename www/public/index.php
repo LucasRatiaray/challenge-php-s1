@@ -2,7 +2,10 @@
 
 namespace App;
 
-//Notre Autoloader
+// Inclure l'autoloader de Composer pour PhpMailer
+require __DIR__ . '/../vendor/autoload.php';
+
+// Notre Autoloader
 spl_autoload_register("App\myAutoloader");
 
 function myAutoloader($class){
@@ -16,7 +19,6 @@ function myAutoloader($class){
         include "../Models/".$class.".php";
     }
 }
-
 
 //Lorsque on met dans l'url /login par exemple
 //On récupère dans le fichier Routes.yaml le controller et l'action associée

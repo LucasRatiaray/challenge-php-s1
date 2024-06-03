@@ -20,10 +20,10 @@
   Security: true
   Role: ["admin", "author"]
 
-/create-page:
-  Controller: "Page"
-  Action: "add"
+/request-password-reset:
+  Controller: "Security"
+  Action: "requestPasswordReset"
 
-/show-page:
-  Controller: "Page"
-  Action: "show"
+/reset-password:
+  Controller: "Security"
+  Action: "resetPassword"
