@@ -1,0 +1,29 @@
+/:
+  Controller: "MainController"
+  Action: "home"
+
+/register:
+  Controller: "SecurityController"
+  Action: "register"
+
+/login:
+  Controller: "SecurityController"
+  Action: "login"
+
+/logout:
+  Controller: "MainController"
+  Action: "logout"
+
+/dashboard:
+  Controller: "MainController"
+  Action: "dashboard"
+  Security: true
+  Role: ["admin", "author"]
+
+/create-page:
+  Controller: "PageController"
+  Action: "add"
+
+/show-page:
+  Controller: "PageController"
+  Action: "show"
