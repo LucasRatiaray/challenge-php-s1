@@ -2,4 +2,4 @@
 .env
 /db
 /www/vendor
-/www/DS_Store
+/www/.DS_Store
