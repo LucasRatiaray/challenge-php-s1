@@ -2,8 +2,6 @@
 
 namespace App;
 
-require __DIR__ . '/../Vendor/phpmailer/PHPMailer.php';
-
 // Notre Autoloader
 spl_autoload_register("App\myAutoloader");
 
