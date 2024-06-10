@@ -1,6 +1,6 @@
 smtp:
-  host:
-  username:
-  password:
-  port:
-  encryption:
+  host: "add your info"
+  username: "add your info"
+  password: "add your info"
+  port: "add your info"
+  encryption: "add your info"
