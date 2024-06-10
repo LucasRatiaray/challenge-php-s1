@@ -36,15 +36,22 @@ class Security
             // Debugging statement to check login data
             error_log("Login attempt with email: $email");
 
-            if ($user->login($email, $password)) {
+            $result = $user->login($email, $password);
+
+            if ($result['success']) {
                 // Debugging statement to confirm successful login
-                error_log("Login successful for email: $email");
+                error_log($result['message']);
                 header("Location: /dashboard");
                 exit();
+            } else if ($result['message'] == 'Votre compte n\'est pas activé.'){
+                error_log($result['message']);
+                echo $result['message'] . "<br>";
+                $escapedEmail = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
+                echo "Recevoir un mail d'activation <a href='/request-activate-account?email=$escapedEmail'>Activer le compte</a>";
             } else {
-                echo "Informations d'identification incorrectes";
                 // Debugging statement to confirm failed login
-                error_log("Login failed for email: $email");
+                error_log($result['message']);
+                echo $result['message'];
             }
         }
 
@@ -63,19 +70,20 @@ class Security
             $user->setLastname($_POST["lastname"]);
             $user->setEmail($_POST["email"]);
             $user->setPassword($_POST["password"]); // Password is hashed inside the setPassword method
+            $token = bin2hex(random_bytes(32));
+            $user->setToken($_POST["email"], $token);
             $user->save();
 
             // Charger la configuration
-            $config = require __DIR__ . '/../config/config.php';
-
+            $config = require __DIR__ . '/../Config/config.php';
             // Créer une instance de Mailer avec la configuration
             $mailer = new Mailer($config);
-
             // Définir les informations de l'e-mail
             $from = ['email' => 'admin@rebellab.tech', 'Rebellab' => 'Mailer'];
             $to = ['email' => $_POST["email"], 'name' => $_POST["firstname"] . ' ' . $_POST["lastname"]];
             $subject = 'Confirmation de votre inscription';
-            $body = 'Merci de vous être inscrit sur notre site !';
+            $confirmLink = 'http://localhost/confirm-email?token=' . $token;
+            $body = "Cliquez sur ce lien pour confirmer votre inscription: <a href='$confirmLink'>Confirmer l'inscription</a>";
             $altBody = 'Merci de vous être inscrit sur notre site !';
 
             // Envoyer l'e-mail
@@ -112,23 +120,21 @@ class Security
 
     public function requestPasswordReset(): void
     {
-        $form = new Form("RequestPasswordReset");
+        $form = new Form("PasswordResetRequest");
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user = new User();
             $email = $_POST['email'];
 
             if ($user->exists($email)) {
-                // Générer un token de réinitialisation
-                $resetToken = bin2hex(random_bytes(16));
-                $user->setResetToken($email, $resetToken);
+                // Generate a unique reset token
+                $resetToken = bin2hex(random_bytes(32));
+                $user->setToken($email, $resetToken);
 
                 // Charger la configuration
-                $config = require __DIR__ . '/../config/config.php';
-
+                $config = require __DIR__ . '/../Config/config.php';
                 // Créer une instance de Mailer avec la configuration
                 $mailer = new Mailer($config);
-
                 // Définir les informations de l'e-mail
                 $from = ['email' => 'no-reply@rebellab.tech', 'name' => 'Rebellab'];
                 $to = ['email' => $email, 'name' => $user->getFullName($email)];
@@ -153,7 +159,7 @@ class Security
 
     public function resetPassword(): void
     {
-        $form = new Form("ResetPassword");
+        $form = new Form("PasswordReset");
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user = new User();
@@ -161,16 +167,67 @@ class Security
             $newPassword = $_POST['password'];
 
             if ($user->resetPassword($token, $newPassword)) {
-                echo "Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.";
+                echo "Password has been reset successfully.";
                 header("Location: /login");
                 exit();
             } else {
-                echo "La réinitialisation du mot de passe a échoué. Token invalide ou expiré. Veuillez demander un nouveau lien de réinitialisation.";
+                echo "Invalid token or the token has expired.";
             }
         }
 
-        $view = new View("Security/resetPassword");
+        $view = new View("Security/passwordReset");
         $view->assign("form", $form->build());
         $view->render();
+    }
+
+    public function confirmAccount(): void
+    {
+        $user = new User();
+        $token = $_GET['token'];
+
+        if ($user->confirmAccount($token)) {
+            echo "Account has been confirmed successfully. <a href='/login'>Login</a>";
+        } else {
+            echo "Invalid token or the token has expired.";
+        }
+    }
+
+    public function requestActivateAccount(): void
+    {
+        $user = new User();
+        $email = $_GET['email'];
+
+        if ($user->exists($email)) {
+            // Charger la configuration
+            $config = require __DIR__ . '/../Config/config.php';
+            // Créer une instance de Mailer avec la configuration
+            $mailer = new Mailer($config);
+            // Définir les informations de l'e-mail
+            $from = ['email' => 'no-reply@rebellab.tech', 'name' => 'Rebellab'];
+            $to = ['email' => $email, 'name' => $user->getFullName($email)];
+            $subject = 'Confirmation de votre inscription';
+            $activateLink = 'http://localhost/activate-account?email=' . $email;
+            $body = "Cliquez sur ce lien pour activer votre compte: <a href='$activateLink'>Activer mon compte</a>";
+            $altBody = "Cliquez sur ce lien pour activer votre compte: $activateLink";
+
+            // Envoyer l'e-mail
+            $mailer->sendMail($from, $to, $subject, $body, $altBody);
+
+            echo "Un e-mail d'activation a été envoyé à votre adresse e-mail : $email <br>";
+        } else {
+            echo "Aucun utilisateur n'a été trouvé avec cette adresse e-mail.<br>";
+        }
+    }
+
+    public function activateAccount(): void
+    {
+        $user = new User();
+        $email = $_GET['email'];
+
+        if ($user->activateAccount($email)) {
+            echo "Account has been activated successfully. <a href='/login'>Login</a>";
+        } else {
+            echo "Invalid token or the token has expired.";
+        }
     }
 }

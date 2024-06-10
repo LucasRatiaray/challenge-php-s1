@@ -13,8 +13,8 @@ class User extends SQL
     protected string $email;
     protected string $password;
     protected int $status = 0;
-    protected ?string $reset_token = null;
-    protected ?string $reset_token_expiry = null;
+    protected ?string $token = null;
+    protected ?string $token_expiry = null;
 
     /**
      * @return int
@@ -112,6 +112,14 @@ class User extends SQL
         $this->status = $status;
     }
 
+    /**
+     * @return string
+     */
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
     public function exists($email): bool
     {
         $sql = "SELECT id FROM " . $this->table . " WHERE email = :email";
@@ -132,27 +140,58 @@ class User extends SQL
         return $user['firstname'] . ' ' . $user['lastname'];
     }
 
-    public function setResetToken($email, $resetToken): void
+    public function setToken($email, $token): void
     {
-        $expiry = date('Y-m-d H:i:s', strtotime('+1 hour')); // Token expire dans 1 heure
-        $sql = "UPDATE " . $this->table . " SET reset_token = :reset_token, reset_token_expiry = :expiry WHERE email = :email";
+        $this->token = $token;
+        $this->token_expiry = date('Y-m-d H:i:s', strtotime('+1 hour'));
+    }
+
+    public function confirmAccount($token): bool
+    {
+        $sql = "SELECT id FROM " . $this->table . " WHERE token = :token AND token_expiry > NOW()";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':reset_token', $resetToken, PDO::PARAM_STR);
-        $stmt->bindParam(':expiry', $expiry, PDO::PARAM_STR);
+        $stmt->bindParam(':token', $token, PDO::PARAM_STR);
+        $stmt->execute();
+
+        if ($user = $stmt->fetch()) {
+            $sqlUpdate = "UPDATE " . $this->table . " SET status = 1, token = NULL, token_expiry = NULL WHERE id = :id";
+            $stmtUpdate = $this->pdo->prepare($sqlUpdate);
+            $stmtUpdate->bindParam(':id', $user['id'], PDO::PARAM_INT);
+            $stmtUpdate->execute();
+            return true;
+        }
+
+        return false;
+    }
+
+    public function activateAccount($email): bool
+    {
+        $sql = "SELECT id FROM " . $this->table . " WHERE email = :email AND status = 0";
+        $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':email', $email, PDO::PARAM_STR);
         $stmt->execute();
+
+        if ($user = $stmt->fetch()) {
+            $sqlUpdate = "UPDATE " . $this->table . " SET status = 1, token = NULL, token_expiry = NULL WHERE id = :id";
+            $stmtUpdate = $this->pdo->prepare($sqlUpdate);
+            $stmtUpdate->bindParam(':id', $user['id'], PDO::PARAM_INT);
+            $stmtUpdate->execute();
+            return true;
+        }
+
+        return false;
     }
 
     public function resetPassword($token, $newPassword): bool
     {
-        $sql = "SELECT id FROM " . $this->table . " WHERE reset_token = :token AND reset_token_expiry > NOW()";
+        $sql = "SELECT id FROM " . $this->table . " WHERE token = :token AND token_expiry > NOW()";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':token', $token, PDO::PARAM_STR);
         $stmt->execute();
 
         if ($user = $stmt->fetch()) {
             $newPasswordHashed = password_hash($newPassword, PASSWORD_BCRYPT);
-            $sqlUpdate = "UPDATE " . $this->table . " SET password = :password, reset_token = NULL, reset_token_expiry = NULL WHERE id = :id";
+            $sqlUpdate = "UPDATE " . $this->table . " SET password = :password, token = NULL, token_expiry = NULL WHERE id = :id";
             $stmtUpdate = $this->pdo->prepare($sqlUpdate);
             $stmtUpdate->bindParam(':password', $newPasswordHashed, PDO::PARAM_STR);
             $stmtUpdate->bindParam(':id', $user['id'], PDO::PARAM_INT);

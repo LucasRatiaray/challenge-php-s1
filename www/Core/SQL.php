@@ -69,9 +69,9 @@ class SQL
         $queryPrepared->execute($columns);
     }
 
-    public function login(string $email, string $password): bool
+    public function login(string $email, string $password): array
     {
-        $sql = "SELECT id, password FROM " . $this->table . " WHERE email = :email";
+        $sql = "SELECT id, password, status FROM " . $this->table . " WHERE email = :email";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':email', $email, PDO::PARAM_STR);
@@ -84,18 +84,33 @@ class SQL
 
         if ($user = $stmt->fetch()) {
             if (password_verify($password, $user['password'])) {
-                $_SESSION['user_id'] = $user['id'];
-                return true;
+                if ($user['status'] == 1) {
+                    $_SESSION['user_id'] = $user['id'];
+                    return [
+                        'success' => true,
+                        'message' => 'Vous êtes connecté avec votre adresse email ' . $email
+                    ];
+                } else {
+                    return [
+                        'success' => false,
+                        'message' => 'Votre compte n\'est pas activé.'
+                    ];
+                }
+            } else {
+                return [
+                    'success' => false,
+                    'message' => 'Mot de passe incorrect.'
+                ];
             }
         }
-
-        return false;
+        return [
+            'success' => false,
+            'message' => 'Adresse email inconnue.'
+        ];
     }
 
     public function getId()
     {
         return $this->id;
     }
-
-    
 }

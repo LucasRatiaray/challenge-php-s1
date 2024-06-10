@@ -20,6 +20,18 @@
   Security: true
   Role: ["admin", "author"]
 
+/confirm-email:
+  Controller: "Security"
+  Action: "confirmAccount"
+
+/request-activate-account:
+  Controller: "Security"
+  Action: "requestActivateAccount"
+
+/activate-account:
+  Controller: "Security"
+  Action: "activateAccount"
+
 /request-password-reset:
   Controller: "Security"
   Action: "requestPasswordReset"
