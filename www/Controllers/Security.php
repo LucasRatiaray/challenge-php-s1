@@ -41,6 +41,7 @@ class Security
             if ($result['success']) {
                 // Debugging statement to confirm successful login
                 error_log($result['message']);
+                $_SESSION['user_id'] = $user->getId();
                 header("Location: /dashboard");
                 exit();
             } else if ($result['message'] == 'Votre compte n\'est pas activé.'){

@@ -39,3 +39,11 @@
 /reset-password:
   Controller: "Security"
   Action: "resetPassword"
+
+/create-page:
+  Controller: "PageController"
+  Action: "create"
+
+/store-page:
+  Controller: "PageController"
+  Action: "store"

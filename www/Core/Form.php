@@ -121,4 +121,10 @@ class Form
             return false;
         }
     }
+
+
+    public function getErrors(): array
+    {
+        return $this->errors;
+    }
 }

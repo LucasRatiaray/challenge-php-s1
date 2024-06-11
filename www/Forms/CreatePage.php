@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Forms;
+
 class CreatePage
 {
     public static function getConfig(): array
@@ -26,9 +27,16 @@ class CreatePage
                     "placeholder" => "Content",
                     "required" => true,
                     "error" => "Content must be at least 10 characters"
+                ],
+                "description" => [
+                    "type" => "text",
+                    "min" => 2,
+                    "max" => 255,
+                    "placeholder" => "Description",
+                    "required" => false,
+                    "error" => "Description must be between 2 and 255 characters"
                 ]
             ]
         ];
     }
 }
-
