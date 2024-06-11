@@ -1,8 +1,17 @@
 <?php
 namespace App\Controller;
+use App\Core\Security as Auth;
 use App\Core\View;
+use App\Models\User;
+
 class Main
 {
+    public function __construct()
+    {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+    }
     public function home()
     {
         //Appeler un template Front et la vue Main/Home
@@ -17,5 +26,16 @@ class Main
         //Redirection
     }
 
+    public function dashboard(): void
+    {
+        $security = new Auth();
+        if (!$security->isLogged() || !$security->hasRole(['admin', 'author'])) {
+            header("Location: /login");
+            exit();
+        }
+
+        $view = new View("Main/dashboard");
+        $view->render();
+    }
 
 }

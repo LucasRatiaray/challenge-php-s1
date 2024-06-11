@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS "chall_user" (
     "lastname" VARCHAR(50) NOT NULL,
     "email" VARCHAR(320) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
-    "role" SMALLINT NOT NULL DEFAULT 0,
+    "role" VARCHAR(50) NOT NULL,
     "status" SMALLINT NOT NULL DEFAULT 0,
     "date_inserted" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "date_updated" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -24,6 +24,17 @@ CREATE TABLE IF NOT EXISTS "chall_user" (
     "token_expiry" TIMESTAMP DEFAULT NULL
 );
 
+DROP TABLE IF EXISTS "chall_page";
+CREATE TABLE IF NOT EXISTS"chall_page" (
+                                  "id" SERIAL PRIMARY KEY,
+                                  "title" VARCHAR(50) NOT NULL,
+                                  "description" VARCHAR(350) NOT NULL,
+                                  "content" VARCHAR NOT NULL,
+                                  "user_id" INT NOT NULL,
+                                  CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES chall_user(id),
+                                  date_inserted TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                  date_updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 -- Définir un déclencheur pour mettre à jour la colonne `date_updated`
 CREATE OR REPLACE FUNCTION update_date_updated()
 RETURNS TRIGGER AS $$

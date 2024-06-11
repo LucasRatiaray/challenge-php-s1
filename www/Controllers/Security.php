@@ -68,8 +68,9 @@ class Security
             $user = new User();
             $user->setFirstname($_POST["firstname"]);
             $user->setLastname($_POST["lastname"]);
+            $user->setPassword($_POST["password"]);
             $user->setEmail($_POST["email"]);
-            $user->setPassword($_POST["password"]); // Password is hashed inside the setPassword method
+            $user->setRole(User::ROLE_AUTHOR);
             $token = bin2hex(random_bytes(32));
             $user->setToken($_POST["email"], $token);
             $user->save();
@@ -106,17 +107,6 @@ class Security
         exit();
     }
 
-    public function dashboard(): void
-    {
-        $security = new Auth();
-        if (!$security->isLogged()) {
-            header("Location: /login");
-            exit();
-        }
-
-        $view = new View("Security/dashboard");
-        $view->render();
-    }
 
     public function requestPasswordReset(): void
     {

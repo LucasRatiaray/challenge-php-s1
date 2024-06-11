@@ -6,12 +6,16 @@ use App\Core\SQL;
 class User extends SQL
 {
 
-
+    const ROLE_ADMIN = 'admin';
+    const ROLE_AUTHOR = 'author';
     private ?int $id = null;
     protected string $firstname;
     protected string $lastname;
     protected string $email;
     protected string $password;
+
+    protected string $role;
+
     protected int $status = 0;
     protected ?string $token = null;
     protected ?string $token_expiry = null;
@@ -46,6 +50,21 @@ class User extends SQL
     public function setFirstname(string $firstname): void
     {
         $this->firstname = ucwords(strtolower(trim($firstname)));
+    }
+    /**
+     * @return string
+     */
+    public function getRole(): string
+    {
+        return $this->role;
+    }
+
+    /**
+     * @param string $role
+     */
+    public function setRole(string $role): void
+    {
+        $this->role = strtolower(trim($role));
     }
 
     /**
@@ -200,5 +219,14 @@ class User extends SQL
         }
 
         return false;
+    }
+
+    public function getUserById(int $id): array
+    {
+        $sql = "SELECT * FROM " . $this->table . " WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
