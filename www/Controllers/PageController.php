@@ -64,7 +64,7 @@ class PageController
             $page->setTitle($_POST['title']);
             $page->setContent($_POST['content']);
             $page->setDescription($_POST['description'] ?? null);
-            $page->setUserId($_SESSION['user_id']); // Assuming user_id is stored in session
+            $page->setUserId($_SESSION['user_id']);
 
             if ($page->save()) {
                 header("Location: /dashboard");

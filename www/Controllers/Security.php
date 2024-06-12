@@ -33,24 +33,22 @@ class Security
             $email = $_POST['email'];
             $password = $_POST['password'];
 
-            // Debugging statement to check login data
             error_log("Login attempt with email: $email");
 
             $result = $user->login($email, $password);
 
             if ($result['success']) {
-                // Debugging statement to confirm successful login
                 error_log($result['message']);
                 $_SESSION['user_id'] = $user->getId();
+                error_log("User ID stored in session: " . $_SESSION['user_id']);
                 header("Location: /dashboard");
                 exit();
-            } else if ($result['message'] == 'Votre compte n\'est pas activé.'){
+            } else if ($result['message'] == 'Votre compte n\'est pas activé.') {
                 error_log($result['message']);
                 echo $result['message'] . "<br>";
                 $escapedEmail = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
                 echo "Recevoir un mail d'activation <a href='/request-activate-account?email=$escapedEmail'>Activer le compte</a>";
             } else {
-                // Debugging statement to confirm failed login
                 error_log($result['message']);
                 echo $result['message'];
             }

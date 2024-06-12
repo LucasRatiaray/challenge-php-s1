@@ -29,8 +29,9 @@ class Main
     public function dashboard(): void
     {
         $security = new Auth();
-        if (!$security->isLogged() || !$security->hasRole(['admin', 'author'])) {
-            header("Location: /login");
+        if (!$security->isLogged() ) {
+            error_log("User is not logged in");
+            header("Location: /register");
             exit();
         }
 

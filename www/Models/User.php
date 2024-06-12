@@ -229,4 +229,54 @@ class User extends SQL
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function login(string $email, string $password): array
+    {
+        $sql = "SELECT id, password, status FROM " . $this->table . " WHERE email = :email";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+
+        try {
+            $stmt->execute();
+        } catch (PDOException $e) {
+            die('SQL Error: ' . $e->getMessage());
+        }
+
+        if ($user = $stmt->fetch()) {
+            if (password_verify($password, $user['password'])) {
+                if ($user['status'] == 1) {
+                    $this->id = $user['id']; // Assurez-vous que l'ID utilisateur est défini dans l'objet
+                    return [
+                        'success' => true,
+                        'message' => 'Vous êtes connecté avec votre adresse email ' . $email
+                    ];
+                } else {
+                    return [
+                        'success' => false,
+                        'message' => 'Votre compte n\'est pas activé.'
+                    ];
+                }
+            } else {
+                return [
+                    'success' => false,
+                    'message' => 'Mot de passe incorrect.'
+                ];
+            }
+        }
+        return [
+            'success' => false,
+            'message' => 'Adresse email inconnue.'
+        ];
+    }
+    public function update(): bool
+    {
+        $sql = "UPDATE " . $this->table . " SET firstname = :firstname, lastname = :lastname, email = :email WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':firstname', $this->firstname, PDO::PARAM_STR);
+        $stmt->bindParam(':lastname', $this->lastname, PDO::PARAM_STR);
+        $stmt->bindParam(':email', $this->email, PDO::PARAM_STR);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
 }

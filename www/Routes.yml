@@ -47,3 +47,15 @@
 /store-page:
   Controller: "PageController"
   Action: "store"
+
+/profil-user:
+  Controller: "UserController"
+  Action: "profil"
+
+/edit-user:
+  Controller: "UserController"
+  Action: "edit"
+
+/update-profil:
+  Controller: "UserController"
+  Action: "update"

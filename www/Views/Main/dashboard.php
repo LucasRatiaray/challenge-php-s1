@@ -6,3 +6,7 @@
 <form action="/create-page" method="get">
   <button type="submit">Create Page</button>
 </form>
+
+<form action="/profil-user" method="get">
+  <button type="submit">Profil</button>
+</form>
