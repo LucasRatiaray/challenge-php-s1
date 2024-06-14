@@ -279,4 +279,12 @@ class User extends SQL
         $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
         return $stmt->execute();
     }
+
+    public function getAllUsers(): array
+    {
+        $sql = "SELECT * FROM " . $this->table;
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

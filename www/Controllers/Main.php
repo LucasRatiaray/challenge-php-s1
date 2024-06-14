@@ -26,16 +26,21 @@ class Main
         //Redirection
     }
 
-    public function dashboard(): void
+
+        public function dashboard(): void
     {
         $security = new Auth();
-        if (!$security->isLogged() ) {
-            error_log("User is not logged in");
+        if (!$security->isLogged() || !$security->hasRole(['admin', 'author'])) {
             header("Location: /register");
             exit();
         }
 
+        $userId = $_SESSION['user_id'];
+        $user = new User();
+        $userInfo = $user->getUserById($userId);
+
         $view = new View("Main/dashboard");
+        $view->assign("userRole", $userInfo['role']);
         $view->render();
     }
 

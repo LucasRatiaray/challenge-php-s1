@@ -10,3 +10,9 @@
 <form action="/profil-user" method="get">
   <button type="submit">Profil</button>
 </form>
+
+<?php if ($userRole === 'admin'): ?>
+  <form action="/list-users" method="get">
+    <button type="submit">Voir tous les utilisateurs</button>
+  </form>
+<?php endif; ?>

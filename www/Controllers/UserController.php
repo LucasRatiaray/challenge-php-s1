@@ -6,6 +6,7 @@ use App\Core\View;
 use App\Core\Form;
 use App\Models\User;
 use App\Forms\EditUser;
+use App\Core\Security as Auth;
 
 class UserController
 {
@@ -40,7 +41,27 @@ class UserController
 
     public function list(): void
     {
-        // Méthode de liste
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (isset($_SESSION['user_id'])) {
+            $userId = $_SESSION['user_id'];
+            $user = new User();
+            $security = new Auth();
+
+            if ($security->hasRole(['admin'])) {
+                $users = $user->getAllUsers();
+
+                $view = new View("User/listUsers");
+                $view->assign("users", $users);
+                $view->render();
+            } else {
+                echo "Access denied.";
+            }
+        } else {
+            echo "User not logged in.";
+        }
     }
 
     public function edit(): void

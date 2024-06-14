@@ -59,3 +59,7 @@
 /update-profil:
   Controller: "UserController"
   Action: "update"
+
+/list-users:
+  Controller: "UserController"
+  Action: "list"
