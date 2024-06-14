@@ -4,9 +4,9 @@ namespace App\Controller;
 
 use App\Core\View;
 use App\Core\Form;
+use App\Core\Security as Auth; // Assurez-vous que c'est la bonne classe
 use App\Models\User;
 use App\Forms\EditUser;
-use App\Core\Security as Auth;
 
 class UserController
 {
@@ -119,6 +119,64 @@ class UserController
                 $view->assign("form", $formHtml);
                 $view->assign("user", $userInfo);
                 $view->render();
+            }
+        } else {
+            echo "User not logged in.";
+        }
+    }
+
+    public function editUser(): void
+    {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (isset($_GET['id'])) {
+            $userId = $_GET['id'];
+            $user = new User();
+            $userInfo = $user->getUserById($userId);
+
+            $form = new Form("EditUser");
+            $formHtml = $form->build();
+
+            $view = new View("User/editUser");
+            $view->assign("form", $formHtml);
+            $view->assign("user", $userInfo);
+            $view->render();
+        } else {
+            echo "User ID not provided.";
+        }
+    }
+
+
+    public function updateUserInline(): void
+    {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (isset($_SESSION['user_id'])) {
+            $security = new Auth();
+            if ($security->hasRole(['admin'])) {
+                if (isset($_POST['id'])) {
+                    $userId = intval($_POST['id']); // Assurez-vous que l'ID est un entier
+                    $user = new User();
+                    $user->setId($userId);
+                    $user->setFirstname($_POST['firstname']);
+                    $user->setLastname($_POST['lastname']);
+                    $user->setEmail($_POST['email']);
+
+                    if ($user->update()) {
+                        header("Location: /list-users");
+                        exit();
+                    } else {
+                        echo "There was an error updating the user.";
+                    }
+                } else {
+                    echo "User ID not provided.";
+                }
+            } else {
+                echo "Access denied.";
             }
         } else {
             echo "User not logged in.";

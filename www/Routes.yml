@@ -44,8 +44,17 @@
   Controller: "PageController"
   Action: "create"
 
+
 /store-page:
   Controller: "PageController"
+  Action: "store"
+
+/create-article:
+  Controller: "ArticleController"
+  Action: "create"
+
+/store-article:
+  Controller: "ArticleController"
   Action: "store"
 
 /profil-user:
@@ -63,3 +72,15 @@
 /list-users:
   Controller: "UserController"
   Action: "list"
+
+/edit-as-admin:
+  Controller: "UserController"
+  Action: "editAsAdmin"
+
+/update-user:
+  Controller: "UserController"
+  Action: "updateUser"
+
+/update-user-inline:
+  Controller: "UserController"
+  Action: "updateUserInline"
