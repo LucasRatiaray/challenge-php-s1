@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Template Front</title>
-</head>
+  <meta charset="UTF-8">
+  <title>Ceci est mon front</title>
+  <meta name="description" content="Super site avec une magnifique intégration">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/front.css">
 
+</head>
 <body>
-    <h1>Template front</h1>
     <!-- include view -->
     <?php include "../Views/".$this->view.".php";?>
+
 </body>

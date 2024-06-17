@@ -1,11 +1,11 @@
 <?php
-
 namespace App\Controller;
 
 use App\Core\View;
 use App\Core\Form;
 use App\Models\Page;
 use App\Forms\CreatePage;
+use App\Models\User;
 
 class PageController
 {
@@ -16,43 +16,12 @@ class PageController
         }
     }
 
-
-    public function index()
-    {
-        echo "Liste des pages";
-    }
-
     public function create()
     {
         $form = new Form("CreatePage");
         $view = new View("Page/createPage");
         $view->assign("form", $form->build());
         $view->render();
-    }
-
-    public function show()
-    {
-        echo "Afficher page";
-    }
-
-    public function edit()
-    {
-        echo "Modifier page";
-    }
-
-    public function delete()
-    {
-        echo "Supprimer page";
-    }
-
-    public function add()
-    {
-        echo "Ajouter page";
-    }
-
-    public function update()
-    {
-        echo "Mettre à jour page";
     }
 
     public function store()
@@ -78,5 +47,24 @@ class PageController
                 echo "<p>$error</p>";
             }
         }
+    }
+
+    public function index()
+    {
+        $page = new Page();
+        $pages = $page->getAllPages();
+        $view = new View("Main/dashboard");
+        $view->assign("pages", $pages);
+        $view->render();
+    }
+
+    public function list(): void
+    {
+        $user = (new User())->getUserById($_SESSION['user_id']);
+        $pages = new Page();
+        $pages ->getAllPages();
+        $view = new View("Page/home", "back");
+        $view->assign('pages', $pages);
+        $view->render();
     }
 }

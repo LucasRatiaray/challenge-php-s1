@@ -2,6 +2,7 @@
 namespace App\Controller;
 use App\Core\Security as Auth;
 use App\Core\View;
+use App\Models\Page;
 use App\Models\User;
 
 class Main
@@ -34,12 +35,13 @@ class Main
             header("Location: /register");
             exit();
         }
-
+        $page = new Page();
         $userId = $_SESSION['user_id'];
         $user = new User();
         $userInfo = $user->getUserById($userId);
-
+        $pages = $page->getAllPages();
         $view = new View("Main/dashboard");
+        $view->assign('pages', $pages);
         $view->assign("userRole", $userInfo['role']);
         $view->render();
     }
