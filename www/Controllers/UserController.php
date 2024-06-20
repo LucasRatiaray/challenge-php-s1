@@ -4,34 +4,64 @@ namespace App\Controller;
 
 use App\Core\View;
 use App\Core\Form;
-use App\Core\Security as Auth; // Assurez-vous que c'est la bonne classe
+use App\Core\Security as Auth;
 use App\Models\User;
 use App\Forms\EditUser;
 
 class UserController
 {
-    public function delete(): void
-    {
-        // Méthode de suppression
-    }
-
-    public function profil(): void
+    private function checkSession(): bool
     {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
 
-        if (isset($_SESSION['user_id'])) {
-            $userId = $_SESSION['user_id'];
-            $user = new User();
-            $userInfo = $user->getUserById($userId);
+        return isset($_SESSION['user_id']);
+    }
 
-            $view = new View("User/userProfil");
-            $view->assign("user", $userInfo);
-            $view->render();
-        } else {
+    public function delete(): void
+    {
+        if (!$this->checkSession()) {
             echo "User not logged in.";
+            return;
         }
+
+        $security = new Auth();
+        if (!$security->hasRole(['admin'])) {
+            echo "Access denied.";
+            return;
+        }
+
+        if (isset($_POST['id'])) {
+            $userId = intval($_POST['id']);
+            $user = new User();
+            $user->setId($userId);
+
+            if ($user->delete()) {
+                header("Location: /list-users");
+                exit();
+            } else {
+                echo "There was an error deleting the user.";
+            }
+        } else {
+            echo "User ID not provided.";
+        }
+    }
+
+    public function profil(): void
+    {
+        if (!$this->checkSession()) {
+            echo "User not logged in.";
+            return;
+        }
+
+        $userId = $_SESSION['user_id'];
+        $user = new User();
+        $userInfo = $user->getUserById($userId);
+
+        $view = new View("User/userProfil");
+        $view->assign("user", $userInfo);
+        $view->render();
     }
 
     public function add(): void
@@ -41,41 +71,40 @@ class UserController
 
     public function list(): void
     {
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        if (isset($_SESSION['user_id'])) {
-            $userId = $_SESSION['user_id'];
-            $user = new User();
-            $security = new Auth();
-
-            if ($security->hasRole(['admin'])) {
-                $users = $user->getAllUsers();
-
-                $view = new View("User/listUsers");
-                $view->assign("users", $users);
-                $view->render();
-            } else {
-                echo "Access denied.";
-            }
-        } else {
+        if (!$this->checkSession()) {
             echo "User not logged in.";
+            return;
         }
+
+        $userId = $_SESSION['user_id'];
+        $user = new User();
+        $security = new Auth();
+
+        if (!$security->hasRole(['admin'])) {
+            echo "Access denied.";
+            return;
+        }
+
+        $users = $user->getAllUsers();
+        $view = new View("User/listUsers");
+        $view->assign("users", $users);
+        $view->render();
     }
 
     public function edit(): void
     {
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
+        if (!$this->checkSession()) {
+            echo "User not logged in.";
+            return;
         }
 
-        if (isset($_SESSION['user_id'])) {
-            $userId = $_SESSION['user_id'];
+        if (isset($_GET['id'])) {
+            $userId = intval($_GET['id']);
             $user = new User();
             $userInfo = $user->getUserById($userId);
 
-            $form = new Form("EditUser");
+            $formConfig = EditUser::getConfig($userId);
+            $form = new Form($formConfig);
             $formHtml = $form->build();
 
             $view = new View("User/editUser");
@@ -83,60 +112,56 @@ class UserController
             $view->assign("user", $userInfo);
             $view->render();
         } else {
-            echo "User not logged in.";
+            echo "User ID not provided.";
         }
     }
 
     public function update(): void
     {
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
+        if (!$this->checkSession()) {
+            echo "User not logged in.";
+            return;
         }
 
-        if (isset($_SESSION['user_id'])) {
-            $userId = $_SESSION['user_id'];
+        $security = new Auth();
+        if (!$security->hasRole(['admin'])) {
+            echo "Access denied.";
+            return;
+        }
+
+        if (isset($_POST['id']) && !empty($_POST['id'])) {
+            $userId = intval($_POST['id']); // Assurez-vous que l'ID est un entier
             $user = new User();
+            $user->setId($userId);
+            $user->setFirstname($_POST['firstname']);
+            $user->setLastname($_POST['lastname']);
+            $user->setEmail($_POST['email']);
 
-            $form = new Form("EditUser");
-
-            if ($form->isSubmitted() && $form->isValid()) {
-                $user->setId($userId);
-                $user->setFirstname($_POST['firstname']);
-                $user->setLastname($_POST['lastname']);
-                $user->setEmail($_POST['email']);
-
-                if ($user->update()) {
-                    header("Location: /profil-user");
-                    exit();
-                } else {
-                    echo "There was an error updating the profile.";
-                }
+            if ($user->update()) {
+                header("Location: /profil-user");
+                exit();
             } else {
-                $userInfo = $user->getUserById($userId);
-                $formHtml = $form->build();
-
-                $view = new View("User/editUser");
-                $view->assign("form", $formHtml);
-                $view->assign("user", $userInfo);
-                $view->render();
+                echo "There was an error updating the profile.";
             }
         } else {
-            echo "User not logged in.";
+            echo "User ID not provided.";
         }
     }
 
     public function editUser(): void
     {
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
+        if (!$this->checkSession()) {
+            echo "User not logged in.";
+            return;
         }
 
         if (isset($_GET['id'])) {
-            $userId = $_GET['id'];
+            $userId = intval($_GET['id']);
             $user = new User();
             $userInfo = $user->getUserById($userId);
 
-            $form = new Form("EditUser");
+            $formConfig = EditUser::getConfig($userId);
+            $form = new Form($formConfig);
             $formHtml = $form->build();
 
             $view = new View("User/editUser");
@@ -149,7 +174,7 @@ class UserController
     }
 
 
-    public function updateUserInline(): void
+    public function updateUsersInline(): void
     {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
@@ -158,22 +183,21 @@ class UserController
         if (isset($_SESSION['user_id'])) {
             $security = new Auth();
             if ($security->hasRole(['admin'])) {
-                if (isset($_POST['id'])) {
-                    $userId = intval($_POST['id']); // Assurez-vous que l'ID est un entier
+                if (isset($_POST['users'])) {
+                    $usersData = $_POST['users'];
                     $user = new User();
-                    $user->setId($userId);
-                    $user->setFirstname($_POST['firstname']);
-                    $user->setLastname($_POST['lastname']);
-                    $user->setEmail($_POST['email']);
 
-                    if ($user->update()) {
-                        header("Location: /list-users");
-                        exit();
-                    } else {
-                        echo "There was an error updating the user.";
+                    foreach ($usersData as $userId => $userData) {
+                        $user->setId(intval($userId));
+                        $user->setFirstname($userData['firstname']);
+                        $user->setLastname($userData['lastname']);
+                        $user->setEmail($userData['email']);
+                        $user->update();
                     }
+                    header("Location: /list-users");
+                    exit();
                 } else {
-                    echo "User ID not provided.";
+                    echo "No user data provided.";
                 }
             } else {
                 echo "Access denied.";
@@ -182,4 +206,5 @@ class UserController
             echo "User not logged in.";
         }
     }
+
 }

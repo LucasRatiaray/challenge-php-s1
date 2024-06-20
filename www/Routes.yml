@@ -44,10 +44,13 @@
   Controller: "PageController"
   Action: "create"
 
-
 /store-page:
   Controller: "PageController"
   Action: "store"
+
+/view-page:
+  Controller: "PageController"
+  Action: "view"
 
 /create-article:
   Controller: "ArticleController"
@@ -55,6 +58,22 @@
 
 /store-article:
   Controller: "ArticleController"
+  Action: "store"
+
+/list-articles:
+  Controller: "ArticleController"
+  Action: "list"
+
+/view-article:
+  Controller: "ArticleController"
+  Action: "view"
+
+/add-comment:
+  Controller: "ArticleController"
+  Action: "addComment"
+
+/store-comment:
+  Controller: "CommentaireController"
   Action: "store"
 
 /profil-user:
@@ -65,9 +84,18 @@
   Controller: "UserController"
   Action: "edit"
 
+/delete-user:
+  Controller: "UserController"
+  Action: "delete"
+
 /update-profil:
   Controller: "UserController"
   Action: "update"
+
+/update:
+  Controller: "UserController"
+  Action: "update"
+  Method: "POST"
 
 /list-users:
   Controller: "UserController"
@@ -81,6 +109,7 @@
   Controller: "UserController"
   Action: "updateUser"
 
-/update-user-inline:
+/update-users-inline:
   Controller: "UserController"
-  Action: "updateUserInline"
+  Action: "updateUsersInline"
+  Method: "POST"

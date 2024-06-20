@@ -287,4 +287,13 @@ class User extends SQL
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+
+    public function delete(): bool
+    {
+        $sql = "DELETE FROM " . $this->table . " WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
 }

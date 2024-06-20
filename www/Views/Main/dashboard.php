@@ -24,6 +24,7 @@
     <?php if ($userRole === 'admin'): ?>
       <li><a href="/list-users">Voir tous les utilisateurs</a></li>
     <?php endif; ?>
+  <li><a href="/list-articles">List Articles</a></li>
   <li><a href="/logout">Logout</a></li>
 </ul>
 
@@ -47,6 +48,7 @@
             <td><?= htmlspecialchars($page->getContent()) ?></td>
             <td><?= htmlspecialchars($page->getDescription()) ?></td>
             <td>
+              <a href="/view-page?id=<?= $page->getId() ?>" class="btn">View</a>
               <a href="/edit-page?id=<?= $page->getId() ?>" class="btn">Edit</a>
               <a href="/delete-page?id=<?= $page->getId() ?>" class="btn red">Delete</a>
             </td>

@@ -47,6 +47,19 @@ CREATE TABLE IF NOT EXISTS"chall_article" (
     date_inserted TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     date_updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
+
+DROP TABLE IF EXISTS "chall_commentaire";
+CREATE TABLE IF NOT EXISTS"chall_commentaire" (
+                                              "id" SERIAL PRIMARY KEY,
+    "description" VARCHAR(350) NOT NULL,
+    "content" VARCHAR NOT NULL,
+    "user_id" INT NOT NULL,
+    "article_id" INT NOT NULL,
+    FOREIGN KEY (article_id) REFERENCES public.esgi_article(id),
+    FOREIGN KEY (user_id) REFERENCES public.esgi_user(id)
+    date_inserted TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
 -- Définir un déclencheur pour mettre à jour la colonne `date_updated`
 CREATE OR REPLACE FUNCTION update_date_updated()
 RETURNS TRIGGER AS $$

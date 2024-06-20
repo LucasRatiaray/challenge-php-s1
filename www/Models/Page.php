@@ -64,7 +64,7 @@ class Page extends SQL
 
     public function save(): bool
     {
-        $sql = "INSERT INTO chall_page (title, content, description, user_id) VALUES (:title, :content, :description, :user_id)";
+        $sql = "INSERT INTO {$this->table} (title, content, description, user_id) VALUES (:title, :content, :description, :user_id)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':title', $this->title, PDO::PARAM_STR);
         $stmt->bindParam(':content', $this->content, PDO::PARAM_STR);
@@ -73,11 +73,20 @@ class Page extends SQL
         return $stmt->execute();
     }
 
-
-    public function getAllPages()
+    public function getAllPages(): array
     {
-        $sql = "SELECT * FROM {$this->table}";
+        $sql = "SELECT * FROM chall_page";
         $stmt = $this->pdo->query($sql);
-        return $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
+        return $stmt->fetchAll(PDO::FETCH_CLASS, 'App\Models\Page');
+    }
+
+    public function getPageById(int $id): ?Page
+    {
+        $sql = "SELECT * FROM chall_page WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->setFetchMode(PDO::FETCH_CLASS, 'App\Models\Page');
+        return $stmt->fetch() ?: null;
     }
 }

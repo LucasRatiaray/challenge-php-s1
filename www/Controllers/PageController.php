@@ -30,8 +30,9 @@ class PageController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $page = new Page();
+            $content = strip_tags($_POST["content"]);
             $page->setTitle($_POST['title']);
-            $page->setContent($_POST['content']);
+            $page->setContent($content);
             $page->setDescription($_POST['description'] ?? null);
             $page->setUserId($_SESSION['user_id']);
 
@@ -65,6 +66,25 @@ class PageController
         $pages ->getAllPages();
         $view = new View("Page/home", "back");
         $view->assign('pages', $pages);
+        $view->render();
+    }
+
+    public function view()
+    {
+        if (!isset($_GET['id'])) {
+            echo "No page ID specified.";
+            return;
+        }
+
+        $pageId = $_GET['id'];
+        $page = (new Page())->getPageById($pageId);
+        if ($page === null) {
+            echo "Page not found.";
+            return;
+        }
+
+        $view = new View("Page/viewPage");
+        $view->assign("page", $page);
         $view->render();
     }
 }

@@ -32,14 +32,16 @@ class Form
         $html .= "<form action='" . $this->config["config"]["action"] . "' method='" . $this->config["config"]["method"] . "'>";
 
         foreach ($this->config["inputs"] as $name => $input) {
+            $value = isset($input["value"]) ? $input["value"] : "";
             $html .= "
-                <input 
-                    type='" . $input["type"] . "' 
-                    name='" . $name . "' 
-                    placeholder='" . $input["placeholder"] . "'
-                    " . (isset($input["required"]) && $input["required"] ? "required" : "") . "
-                    ><br>
-            ";
+            <input 
+                type='" . $input["type"] . "' 
+                name='" . $name . "' 
+                value='" . htmlspecialchars($value) . "' 
+                placeholder='" . $input["placeholder"] . "'
+                " . (isset($input["required"]) && $input["required"] ? "required" : "") . "
+                ><br>
+        ";
         }
 
         $html .= "<input type='submit' value='" . htmlentities($this->config["config"]["submit"]) . "'>";
@@ -47,6 +49,7 @@ class Form
 
         return $html;
     }
+
 
     public function isSubmitted(): bool
     {

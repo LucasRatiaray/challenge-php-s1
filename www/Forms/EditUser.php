@@ -8,7 +8,7 @@ class EditUser
     {
         return [
             "config" => [
-                "action" => "/update-profil",
+                "action" => "/update",
                 "method" => "POST",
                 "submit" => "Valider"
             ],
