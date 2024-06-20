@@ -113,3 +113,8 @@
   Controller: "UserController"
   Action: "updateUsersInline"
   Method: "POST"
+
+/add-user:
+  Controller: "UserController"
+  Action: "add"
+  Method: "GET,POST"

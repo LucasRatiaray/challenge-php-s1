@@ -16,6 +16,8 @@
         usort($users, function($a, $b) {
             return $a['id'] <=> $b['id'];
         });
+
+        $currentUserId = $_SESSION['user_id']; // Récupérez l'ID de l'utilisateur connecté
         ?>
       <form action="/update-users-inline" method="post">
         <table class="highlight">
@@ -40,10 +42,9 @@
                 <input type="email" name="users[<?= htmlspecialchars($user['id']) ?>][email]" value="<?= htmlspecialchars($user['email']) ?>">
               </td>
               <td>
-                <a href="/edit-user?id=<?= htmlspecialchars($user['id']) ?>" class="btn">Edit</a>
                 <form action="/delete-user" method="post" style="display:inline;">
                   <input type="hidden" name="id" value="<?= htmlspecialchars($user['id']) ?>">
-                  <button type="submit" class="btn red" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">Delete</button>
+                  <button type="submit" class="btn red" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');" <?= ($user['id'] == $currentUserId) ? 'disabled' : '' ?>>Delete</button>
                 </form>
                 <button type="submit" class="btn green">Save</button>
               </td>
@@ -57,6 +58,9 @@
     <?php endif; ?>
 </div>
 
+<div class="right-align">
+  <a href="/add-user" class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">add</i></a>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>
 </html>

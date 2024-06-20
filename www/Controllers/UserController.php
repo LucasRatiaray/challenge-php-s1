@@ -64,11 +64,50 @@ class UserController
         $view->render();
     }
 
+
     public function add(): void
     {
-        // Méthode d'ajout
-    }
+        if (!$this->checkSession()) {
+            echo "User not logged in.";
+            return;
+        }
 
+        $security = new Auth();
+        if (!$security->hasRole(['admin'])) {
+            echo "Access denied.";
+            return;
+        }
+
+        $form = new Form("UserForm");
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if ($form->isSubmitted() && $form->isValid()) {
+                $user = new User();
+                $user->setFirstname($_POST['firstname']);
+                $user->setLastname($_POST['lastname']);
+                $user->setEmail($_POST['email']);
+                $user->setPassword($_POST['password']);
+
+                if ($user->save()) {
+                    header("Location: /list-users");
+                    exit();
+                } else {
+                    echo "There was an error adding the user.";
+                }
+            } else {
+                $formHtml = $form->build();
+                $view = new View("User/addUser");
+                $view->assign("userForm", $formHtml);
+                $view->assign("errors", $form->getErrors());
+                $view->render();
+            }
+        } else {
+            $formHtml = $form->build();
+            $view = new View("User/addUser");
+            $view->assign("userForm", $formHtml);
+            $view->render();
+        }
+    }
     public function list(): void
     {
         if (!$this->checkSession()) {

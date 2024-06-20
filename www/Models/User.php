@@ -8,13 +8,13 @@ class User extends SQL
 
     const ROLE_ADMIN = 'admin';
     const ROLE_AUTHOR = 'author';
+
     private ?int $id = null;
     protected string $firstname;
     protected string $lastname;
     protected string $email;
     protected string $password;
-
-    protected string $role;
+    protected string $role = self::ROLE_AUTHOR; // Rôle par défaut
 
     protected int $status = 0;
     protected ?string $token = null;
@@ -294,6 +294,19 @@ class User extends SQL
         $sql = "DELETE FROM " . $this->table . " WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    public function save(): bool
+    {
+        $this->role = $this->role ?? 'author'; // Définissez un rôle par défaut si aucun rôle n'est défini
+        $sql = "INSERT INTO " . $this->table . " (firstname, lastname, email, password, role) VALUES (:firstname, :lastname, :email, :password, :role)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':firstname', $this->firstname, PDO::PARAM_STR);
+        $stmt->bindParam(':lastname', $this->lastname, PDO::PARAM_STR);
+        $stmt->bindParam(':email', $this->email, PDO::PARAM_STR);
+        $stmt->bindParam(':password', $this->password, PDO::PARAM_STR);
+        $stmt->bindParam(':role', $this->role, PDO::PARAM_STR);
         return $stmt->execute();
     }
 }
