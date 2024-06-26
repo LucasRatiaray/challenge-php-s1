@@ -69,7 +69,7 @@ class Security
             $user->setLastname($_POST["lastname"]);
             $user->setPassword($_POST["password"]);
             $user->setEmail($_POST["email"]);
-            $user->setRole(User::ROLE_AUTHOR);
+            $user->setRole(User::ROLE_ADMIN);
             $token = bin2hex(random_bytes(32));
             $user->setToken($_POST["email"], $token);
             $user->save();

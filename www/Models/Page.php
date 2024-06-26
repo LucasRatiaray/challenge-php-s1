@@ -89,4 +89,12 @@ class Page extends SQL
         $stmt->setFetchMode(PDO::FETCH_CLASS, 'App\Models\Page');
         return $stmt->fetch() ?: null;
     }
+
+    public function deleteById(int $id): bool
+    {
+        $sql = "DELETE FROM chall_page WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
 }

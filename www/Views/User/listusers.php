@@ -17,9 +17,9 @@
             return $a['id'] <=> $b['id'];
         });
 
-        $currentUserId = $_SESSION['user_id']; // Récupérez l'ID de l'utilisateur connecté
+        $currentUserId = $_SESSION['user_id'];
         ?>
-      <form action="/update-users-inline" method="post">
+      <form action="/update-users-inline" method="post" class="user-list-form">
         <table class="highlight">
           <thead>
           <tr>

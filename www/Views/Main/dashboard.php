@@ -50,7 +50,7 @@
             <td>
               <a href="/view-page?id=<?= $page->getId() ?>" class="btn">View</a>
               <a href="/edit-page?id=<?= $page->getId() ?>" class="btn">Edit</a>
-              <a href="/delete-page?id=<?= $page->getId() ?>" class="btn red">Delete</a>
+              <a href="/delete-page?id=<?= $page->getId() ?>" class="btn red" onclick="return confirm('Are you sure you want to delete this page?')">Delete</a>
             </td>
           </tr>
         <?php endforeach; ?>

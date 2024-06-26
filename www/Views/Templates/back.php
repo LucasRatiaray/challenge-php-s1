@@ -7,6 +7,7 @@
 </head>
 
 <body>
+
     <h1>Template back</h1>
     <!-- include view -->
     <?php include "../Views/".$this->view.".php";?>

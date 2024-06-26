@@ -1,8 +1,11 @@
 <?php
 namespace App\Controller;
 
+use App\Core\Security as Auth;
 use App\Core\View;
 use App\Core\Form;
+use App\Models\Article;
+use App\Models\Commentaire;
 use App\Models\Page;
 use App\Forms\CreatePage;
 use App\Models\User;
@@ -26,6 +29,11 @@ class PageController
 
     public function store()
     {
+        $security = new Auth();
+        if (!$security->isLogged() || !$security->hasRole(['admin', 'author'])) {
+            header("Location: /register");
+            exit();
+        }
         $form = new Form("CreatePage");
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -72,19 +80,49 @@ class PageController
     public function view()
     {
         if (!isset($_GET['id'])) {
-            echo "No page ID specified.";
+            echo "No article ID specified.";
             return;
         }
 
-        $pageId = $_GET['id'];
-        $page = (new Page())->getPageById($pageId);
-        if ($page === null) {
-            echo "Page not found.";
+        $articleId = $_GET['id'];
+        $article = (new Article())->getArticleById($articleId);
+        if ($article === null) {
+            echo "Article not found.";
             return;
         }
 
-        $view = new View("Page/viewPage");
-        $view->assign("page", $page);
+        // Fetch comments for the article
+        $comments = (new Commentaire())->getCommentsByArticleId($articleId);
+
+        $view = new View("Article/viewArticle");
+        $view->assign("article", $article);
+        $view->assign("comments", $comments); // Pass comments to the view
         $view->render();
     }
+
+
+    public function delete()
+    {
+        $security = new Auth();
+        if (!$security->isLogged() || !$security->hasRole(['admin', 'author'])) {
+            header("Location: /login");
+            exit();
+        }
+
+        if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+            echo "Invalid page ID.";
+            return;
+        }
+
+        $pageId = (int)$_GET['id'];
+        $page = new Page();
+
+        if ($page->deleteById($pageId)) {
+            header("Location: /dashboard");
+            exit();
+        } else {
+            echo "There was an error deleting the page.";
+        }
+    }
+
 }

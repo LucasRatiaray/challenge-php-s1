@@ -108,6 +108,7 @@ class UserController
             $view->render();
         }
     }
+
     public function list(): void
     {
         if (!$this->checkSession()) {

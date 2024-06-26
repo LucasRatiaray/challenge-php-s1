@@ -2,12 +2,17 @@
 
 namespace App\Controller;
 
-use App\Core\View;
 use App\Models\Commentaire;
-use App\Forms\CommentaireForm;
 
 class CommentaireController
 {
+
+    public function __construct()
+    {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+    }
 
     public function store()
     {

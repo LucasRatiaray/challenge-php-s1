@@ -19,7 +19,6 @@ form {
   align-items: center;
 }
 
-
 .container {
   text-align: center;
 }
@@ -81,7 +80,6 @@ h2 {
   width: 100%;
 }
 
-
 input {
   width: 100%;
   padding: 10px;
@@ -92,8 +90,7 @@ input {
   font-size: 14px;
 }
 
-input:focus
- {
+input:focus {
   border-color: #a5d6a7;
   outline: none;
 }
@@ -113,4 +110,45 @@ button[type="submit"] {
 
 button[type="submit"]:hover {
   background-color: #81c784;
+}
+
+/* Specific styles for user-list-form */
+.user-list-form {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  width: auto;
+  display: block;
+}
+
+.user-list-form table {
+  width: 100%;
+}
+
+.user-list-form input {
+  width: auto;
+  margin: 0;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  font-size: 14px;
+}
+
+.user-list-form button {
+  width: auto;
+  margin: 0;
+  border-radius: 0;
+  padding: 5px 10px;
+  font-size: 14px;
+  border: none;  /* Add this line to remove the border */
+}
+
+.user-list-form button.btn {
+  margin-top: 0;
+}
+
+/* No border for specific buttons */
+.no-border {
+  border: none !important;
 }

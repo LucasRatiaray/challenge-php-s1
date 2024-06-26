@@ -52,6 +52,10 @@
   Controller: "PageController"
   Action: "view"
 
+/delete-page:
+  Controller: "PageController"
+  Action: "delete"
+
 /create-article:
   Controller: "ArticleController"
   Action: "create"
