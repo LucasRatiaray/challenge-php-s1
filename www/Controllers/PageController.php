@@ -87,4 +87,81 @@ class PageController
         $view->assign("page", $page);
         $view->render();
     }
+
+    public function edit()
+    {
+    if (!isset($_GET['id'])) {
+        echo "No page ID specified.";
+        return;
+    }
+
+    $pageId = $_GET['id'];
+    $page = (new Page())->getPageById($pageId);
+    if ($page === null) {
+        echo "Page not found.";
+        return;
+    }
+
+    $form = new Form("EditPage");
+    $view = new View("Page/editPage");
+    $view->assign("form", $form->build($page));
+    $view->assign("page", $page);
+    $view->render();
+}
+
+public function update()
+{
+    $form = new Form("EditPage");
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $pageId = $_POST['id'];
+        $page = (new Page())->getPageById($pageId);
+        if ($page === null) {
+            echo "Page not found.";
+            return;
+        }
+
+        $page->setTitle($_POST['title']);
+        $page->setContent(strip_tags($_POST["content"]));
+        $page->setDescription($_POST['description'] ?? null);
+
+        if ($page->save()) {
+            header("Location: /dashboard");
+            exit();
+        } else {
+            echo "There was an error updating the page.";
+        }
+    } else {
+        $view = new View("Page/editPage");
+        $view->assign("form", $form->build());
+        $view->assign("errors", $form->getErrors());
+        $view->render();
+    }
+}
+public function delete()
+{
+    if (!isset($_GET['id'])) {
+        echo "No page ID specified.";
+        return;
+    }
+
+    $pageId = $_GET['id'];
+    $page = (new Page())->getPageById($pageId);
+    if ($page === null) {
+        echo "Page not found.";
+        return;
+    }
+
+    if ($page->delete()) {
+        header("Location: /dashboard");
+        exit();
+    } else {
+        echo "There was an error deleting the page.";
+    }
+}
+
+
+
+    
+
 }

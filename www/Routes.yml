@@ -52,6 +52,21 @@
   Controller: "PageController"
   Action: "view"
 
+/edit-page:
+  Controller: "PageController"
+  Action: "edit"
+  Method: "GET"
+
+/update-page:
+  Controller: "PageController"
+  Action: "update"
+  Method: "POST"
+
+/delete-page:
+  Controller: "PageController"
+  Action: "delete"
+  Method: "GET
+
 /create-article:
   Controller: "ArticleController"
   Action: "create"
@@ -67,6 +82,21 @@
 /view-article:
   Controller: "ArticleController"
   Action: "view"
+
+/edit-article:
+  Controller: "ArticleController"
+  Action: "edit"
+  Method: "GET"
+
+/update-article:
+  Controller: "ArticleController"
+  Action: "update"
+  Method: "POST"
+
+/delete-article:
+  Controller: "ArticleController"
+  Action: "delete"
+  Method: "GET"
 
 /add-comment:
   Controller: "ArticleController"

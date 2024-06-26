@@ -64,12 +64,22 @@ class Page extends SQL
 
     public function save(): bool
     {
-        $sql = "INSERT INTO {$this->table} (title, content, description, user_id) VALUES (:title, :content, :description, :user_id)";
-        $stmt = $this->pdo->prepare($sql);
+        if ($this->id === null) {
+            // Insert new page
+            $sql = "INSERT INTO chall_page (title, content, description, user_id) VALUES (:title, :content, :description, :user_id)";
+            $stmt = $this->pdo->prepare($sql);
+        } else {
+            // Update existing page
+            $sql = "UPDATE chall_page SET title = :title, content = :content, description = :description, user_id = :user_id WHERE id = :id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+        }
+
         $stmt->bindParam(':title', $this->title, PDO::PARAM_STR);
         $stmt->bindParam(':content', $this->content, PDO::PARAM_STR);
         $stmt->bindParam(':description', $this->description, PDO::PARAM_STR);
         $stmt->bindParam(':user_id', $this->user_id, PDO::PARAM_INT);
+
         return $stmt->execute();
     }
 
@@ -88,5 +98,17 @@ class Page extends SQL
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_CLASS, 'App\Models\Page');
         return $stmt->fetch() ?: null;
+    }
+
+    public function delete(): bool
+    {
+        if ($this->id === null) {
+            return false;
+        }
+
+        $sql = "DELETE FROM chall_page WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 }
