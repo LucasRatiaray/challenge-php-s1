@@ -122,3 +122,17 @@
   Controller: "UserController"
   Action: "add"
   Method: "GET,POST"
+
+/media:
+  Controller: "MediaController"
+  Action: "index"
+
+/media/upload:
+  Controller: "MediaController"
+  Action: "upload"
+  Method: "GET,POST"
+
+/media/delete:
+  Controller: "MediaController"
+  Action: "delete"
+  Method: "GET,POST"

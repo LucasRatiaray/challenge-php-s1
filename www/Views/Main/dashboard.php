@@ -25,6 +25,7 @@
       <li><a href="/list-users">Voir tous les utilisateurs</a></li>
     <?php endif; ?>
   <li><a href="/list-articles">List Articles</a></li>
+  <li><a href="/media">Media</a></li> <!-- Added Media link -->
   <li><a href="/logout">Logout</a></li>
 </ul>
 

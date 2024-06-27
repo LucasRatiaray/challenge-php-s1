@@ -58,6 +58,16 @@ CREATE TABLE IF NOT EXISTS "chall_commentaire" (
     "date_updated" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
+DROP TABLE IF EXISTS chall_media;
+CREATE TABLE chall_media (
+                            id SERIAL PRIMARY KEY,
+                            title VARCHAR(80) NOT NULL,
+                            lien VARCHAR(1000) NOT NULL,
+                            description VARCHAR(100) NOT NULL,
+                            date_inserted TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                            date_updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Définir un déclencheur pour mettre à jour la colonne `date_updated`
 CREATE OR REPLACE FUNCTION update_date_updated()
 RETURNS TRIGGER AS $$

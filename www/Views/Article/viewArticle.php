@@ -15,18 +15,23 @@
       position: relative;
       scroll-behavior: smooth;
       padding: 20px 0; /* Add some padding for better scrolling experience */
+      justify-content: center; /* Center the comments container */
+    }
+    .comments {
+      display: flex;
+      align-items: center; /* Center comments vertically within the container */
     }
     .comment-card {
       display: inline-flex;
       flex-shrink: 0;
-      width: 100%;
+      width: 80%; /* Adjust width to ensure it's centered */
       justify-content: center;
       box-sizing: border-box;
       scroll-snap-align: start;
     }
     .card {
       margin: 0 10px;
-      width: 80%; /* Adjust card width as needed */
+      width: 100%; /* Ensure each card takes up the full width of the comment card */
     }
   </style>
 </head>
