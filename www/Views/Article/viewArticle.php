@@ -6,6 +6,29 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <title>View Article</title>
+  <style>
+    .comments-container {
+      display: flex;
+      overflow-x: auto;
+      height: 20em;
+      width: 100%;
+      position: relative;
+      scroll-behavior: smooth;
+      padding: 20px 0; /* Add some padding for better scrolling experience */
+    }
+    .comment-card {
+      display: inline-flex;
+      flex-shrink: 0;
+      width: 100%;
+      justify-content: center;
+      box-sizing: border-box;
+      scroll-snap-align: start;
+    }
+    .card {
+      margin: 0 10px;
+      width: 80%; /* Adjust card width as needed */
+    }
+  </style>
 </head>
 <body>
 <div class="container">
@@ -15,19 +38,19 @@
   <a href="/dashboard" class="btn">Back to Dashboard</a>
 
   <h2>Commentaires</h2>
-  <div>
-      <?php if (!empty($comments)): ?>
-          <?php foreach ($comments as $comment): ?>
-          <div class="card">
-            <div class="card-content">
-              <p><?= htmlspecialchars($comment->getContent()) ?></p>
-              <p><small>Posté par utilisateur <?= htmlspecialchars($comment->getUserId()) ?></small></p>
+  <div class="comments-container">
+    <div class="comments">
+        <?php foreach ($comments as $index => $comment): ?>
+          <div class="comment-card" id="comment-<?= $index ?>">
+            <div class="card">
+              <div class="card-content">
+                <p><?= htmlspecialchars($comment->getContent()) ?></p>
+                <p><small>Posté par utilisateur <?= htmlspecialchars($comment->getUserId()) ?></small></p>
+              </div>
             </div>
           </div>
-          <?php endforeach; ?>
-      <?php else: ?>
-        <p>No comments found.</p>
-      <?php endif; ?>
+        <?php endforeach; ?>
+    </div>
   </div>
 
   <h3>Ajouter un Commentaire</h3>

@@ -61,12 +61,11 @@ class ArticleController
             return;
         }
 
-        // Fetch comments for the article
         $comments = (new Commentaire())->getCommentsByArticleId($articleId);
 
         $view = new View("Article/viewArticle");
         $view->assign("article", $article);
-        $view->assign("comments", $comments); // Pass comments to the view
+        $view->assign("comments", $comments);
         $view->render();
     }
 
