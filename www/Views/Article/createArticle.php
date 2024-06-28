@@ -1,3 +1,3 @@
-<h1>Créer une page</h1>
+<h1>Créer un article</h1>
 
 <?= $form ?>

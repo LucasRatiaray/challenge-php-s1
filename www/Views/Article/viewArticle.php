@@ -51,6 +51,28 @@
               <div class="card-content">
                 <p><?= htmlspecialchars($comment->getContent()) ?></p>
                 <p><small>Posté par utilisateur <?= htmlspecialchars($comment->getUserId()) ?></small></p>
+                  <?php if ($comment->isReported()): ?>
+                    <p><i class="material-icons red-text">warning</i> Reported</p>
+                  <?php endif; ?>
+              </div>
+              <div class="card-action">
+                <a class="dropdown-trigger btn-flat" href="#" data-target="dropdown-<?= $index ?>"><i class="material-icons">more_vert</i></a>
+                <ul id="dropdown-<?= $index ?>" class="dropdown-content">
+                  <li>
+                    <form action="/report-comment" method="post" onsubmit="return confirm('Are you sure you want to report this comment?');">
+                      <input type="hidden" name="id" value="<?= $comment->getId() ?>">
+                      <input type="hidden" name="article_id" value="<?= $article->getId() ?>">
+                      <button type="submit" class="btn-flat">Signaler</button>
+                    </form>
+                  </li>
+                  <li>
+                    <form action="/delete-comment" method="post" onsubmit="return confirm('Are you sure you want to delete this comment?');">
+                      <input type="hidden" name="id" value="<?= $comment->getId() ?>">
+                      <input type="hidden" name="article_id" value="<?= $article->getId() ?>">
+                      <button type="submit" class="btn-flat">Delete</button>
+                    </form>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -68,5 +90,14 @@
   </form>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.dropdown-trigger');
+    var instances = M.Dropdown.init(elems, {
+      constrainWidth: false,
+      coverTrigger: false
+    });
+  });
+</script>
 </body>
 </html>

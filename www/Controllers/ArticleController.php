@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Core\Form;
@@ -13,22 +14,10 @@ class ArticleController
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-
-        $this->checkLogin();
-    }
-
-    private function checkLogin()
-    {
-        if (!isset($_SESSION['user_id'])) {
-            header("Location: /login");
-            exit();
-        }
     }
 
     public function create()
     {
-        $this->checkLogin();
-
         $form = new Form("CreateArticle");
         $view = new View("Article/createArticle");
         $view->assign("form", $form->build());
@@ -37,8 +26,6 @@ class ArticleController
 
     public function store()
     {
-        $this->checkLogin();
-
         $form = new Form("CreateArticle");
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -64,14 +51,12 @@ class ArticleController
 
     public function view()
     {
-        $this->checkLogin();
-
-        if (!isset($_GET['id'])) {
-            echo "No article ID specified.";
+        if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+            echo "Invalid article ID specified.";
             return;
         }
 
-        $articleId = $_GET['id'];
+        $articleId = (int)$_GET['id'];
         $article = (new Article())->getArticleById($articleId);
         if ($article === null) {
             echo "Article not found.";
@@ -88,8 +73,6 @@ class ArticleController
 
     public function list()
     {
-        $this->checkLogin();
-
         $articleModel = new Article();
         $articles = $articleModel->getAllArticles();
         $view = new View("Article/listArticle");
@@ -99,8 +82,6 @@ class ArticleController
 
     public function addComment()
     {
-        $this->checkLogin();
-
         $articleId = $_GET['id'];
         $form = new Form("CommentaireForm");
         $view = new View("Commentaire/addCommentaire");

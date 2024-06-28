@@ -136,3 +136,13 @@
   Controller: "MediaController"
   Action: "delete"
   Method: "GET,POST"
+
+/report-comment:
+  Controller: "CommentaireController"
+  Action: "report"
+  Method: "POST"
+
+/delete-comment:
+  Controller: "CommentaireController"
+  Action: "delete"
+  Method: "POST"

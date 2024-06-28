@@ -6,7 +6,6 @@ use App\Models\Commentaire;
 
 class CommentaireController
 {
-
     public function __construct()
     {
         if (session_status() == PHP_SESSION_NONE) {
@@ -41,18 +40,49 @@ class CommentaireController
         }
     }
 
-    public function moderate()
-    {
-        echo "Modérer commentaire";
-    }
 
-    public function approve()
+    public function report()
     {
-        echo "Approuver commentaire";
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+            $comment = (new Commentaire())->findOneById($_POST['id']);
+            if ($comment) {
+                if ($comment->report()) {
+                    header("Location: /view-article?id=" . $comment->getArticleId());
+                    exit();
+                } else {
+                    echo "Error reporting comment.";
+                }
+            } else {
+                echo "Comment not found.";
+            }
+        }
     }
 
     public function delete()
     {
-        echo "Supprimer commentaire";
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
+                echo "Invalid comment ID.";
+                return;
+            }
+
+            if (!isset($_POST['article_id']) || !is_numeric($_POST['article_id'])) {
+                echo "Invalid article ID.";
+                return;
+            }
+
+            $comment = (new Commentaire())->findOneById((int)$_POST['id']);
+            if ($comment) {
+                if ($comment->delete()) {
+                    header("Location: /view-article?id=" . $_POST['article_id']);
+                    exit();
+                } else {
+                    echo "There was an error deleting the comment.";
+                }
+            } else {
+                echo "Comment not found.";
+            }
+        }
     }
+
 }
