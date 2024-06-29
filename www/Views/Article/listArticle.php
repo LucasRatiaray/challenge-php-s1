@@ -31,7 +31,7 @@
               <td>
                 <a href="/view-article?id=<?= $article->getId() ?>" class="btn">View</a>
                 <a href="/edit-article?id=<?= $article->getId() ?>" class="btn">Edit</a>
-                <a href="/delete-article?id=<?= $article->getId() ?>" class="btn red">Delete</a>
+                <a href="/delete-article?id=<?= $article->getId() ?>" class="btn red" onclick="return confirm('Are you sure you want to delete this article?');">Delete</a>
               </td>
             </tr>
             <?php endif; ?>

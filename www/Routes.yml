@@ -146,3 +146,18 @@
   Controller: "CommentaireController"
   Action: "delete"
   Method: "POST"
+
+
+/edit-article:
+  Controller: "ArticleController"
+  Action: "edit"
+  Method: "GET"
+
+/update-article:
+  Controller: "ArticleController"
+  Action: "update"
+  Method: "POST"
+
+/delete-article:
+  Controller: "ArticleController"
+  Action: "delete"

@@ -51,6 +51,15 @@ class Form
     }
 
 
+    public function setValues(array $values): void
+    {
+        foreach ($values as $key => $value) {
+            if (isset($this->config["inputs"][$key])) {
+                $this->config["inputs"][$key]['value'] = $value;
+            }
+        }
+    }
+
     public function isSubmitted(): bool
     {
         if ($this->config["config"]["method"] == "POST" && !empty($_POST)) {

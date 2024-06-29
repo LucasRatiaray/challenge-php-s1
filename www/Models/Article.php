@@ -65,15 +65,24 @@ class Article extends SQL
 
     public function save(): bool
     {
-        $sql = "INSERT INTO chall_article (title, content, description, user_id, date_inserted, date_updated)
-                VALUES (:title, :content, :description, :user_id, NOW(), NOW())
-                ON CONFLICT (id) DO UPDATE SET title = :title, content = :content, description = :description, date_updated = NOW()";
-        $stmt = $this->pdo->prepare($sql);
+        if ($this->id !== null) {
+            // Update existing article
+            $sql = "UPDATE chall_article
+                SET title = :title, content = :content, description = :description, date_updated = NOW()
+                WHERE id = :id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+        } else {
+            // Insert new article
+            $sql = "INSERT INTO chall_article (title, content, description, user_id, date_inserted, date_updated)
+                VALUES (:title, :content, :description, :user_id, NOW(), NOW())";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':user_id', $this->user_id, PDO::PARAM_INT);
+        }
 
         $stmt->bindParam(':title', $this->title, PDO::PARAM_STR);
         $stmt->bindParam(':content', $this->content, PDO::PARAM_STR);
         $stmt->bindParam(':description', $this->description, PDO::PARAM_STR);
-        $stmt->bindParam(':user_id', $this->user_id, PDO::PARAM_INT);
 
         return $stmt->execute();
     }
@@ -92,5 +101,14 @@ class Article extends SQL
         $sql = "SELECT * FROM chall_article";
         $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
+    }
+
+
+    public function delete(): bool
+    {
+        $sql = "DELETE FROM chall_article WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 }

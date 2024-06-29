@@ -89,4 +89,59 @@ class ArticleController
         $view->assign("articleId", $articleId);
         $view->render();
     }
+
+    public function edit(): void
+    {
+        if (isset($_GET['id'])) {
+            $articleId = intval($_GET['id']);
+            $article = (new Article())->getArticleById($articleId);
+
+            if ($article) {
+                $articleForm = new Form("EditArticle");
+                $articleForm->setValues([
+                    'title' => $article->getTitle(),
+                    'description' => $article->getDescription(),
+                    'content' => $article->getContent()
+                ]);
+
+                if ($articleForm->isSubmitted() && $articleForm->isValid()) {
+                    $article->setTitle($_POST['title']);
+                    $article->setDescription($_POST['description']);
+                    $article->setContent($_POST['content']);
+                    $article->setId($articleId); // Ensure the ID is set for updating
+                    $article->save();
+
+                    header('Location: /dashboard');
+                    exit();
+                }
+
+                $view = new View("Article/editArticle");
+                $view->assign('form', $articleForm->build());
+                $view->render();
+            } else {
+                echo "Article non trouvé !";
+            }
+        } else {
+            echo "ID article non spécifié !";
+        }
+    }
+
+
+    public function delete(): void
+    {
+        if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+            $articleId = intval($_GET['id']);
+            $article = (new Article())->getArticleById($articleId);
+
+            if ($article) {
+                $article->delete();
+                header('Location: /dashboard');
+                exit();
+            } else {
+                echo "Article non trouvé !";
+            }
+        } else {
+            echo "ID article non spécifié !";
+        }
+    }
 }
