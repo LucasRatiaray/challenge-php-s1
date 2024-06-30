@@ -67,15 +67,12 @@ class Article extends SQL
     {
         if ($this->id !== null) {
             // Update existing article
-            $sql = "UPDATE chall_article
-                SET title = :title, content = :content, description = :description, date_updated = NOW()
-                WHERE id = :id";
+            $sql = "UPDATE chall_article SET title = :title, content = :content, description = :description, date_updated = NOW() WHERE id = :id";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
         } else {
             // Insert new article
-            $sql = "INSERT INTO chall_article (title, content, description, user_id, date_inserted, date_updated)
-                VALUES (:title, :content, :description, :user_id, NOW(), NOW())";
+            $sql = "INSERT INTO chall_article (title, content, description, user_id, date_inserted, date_updated) VALUES (:title, :content, :description, :user_id, NOW(), NOW())";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':user_id', $this->user_id, PDO::PARAM_INT);
         }
@@ -103,12 +100,25 @@ class Article extends SQL
         return $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
     }
 
-
     public function delete(): bool
     {
         $sql = "DELETE FROM chall_article WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
         return $stmt->execute();
+    }
+
+
+    public function getCount(): int
+    {
+        $stmt = $this->pdo->query("SELECT COUNT(*) FROM chall_article");
+        return (int) $stmt->fetchColumn();
+    }
+
+
+    public function getLatestArticle(): ?self
+    {
+        $stmt = $this->pdo->query("SELECT * FROM chall_article ORDER BY date_inserted DESC LIMIT 1");
+        return $stmt->fetchObject(self::class) ?: null;
     }
 }

@@ -34,6 +34,8 @@ CREATE TABLE IF NOT EXISTS "chall_page" (
     "date_updated" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
+
+-- Define the schema for the chall_article table
 DROP TABLE IF EXISTS "chall_article";
 CREATE TABLE IF NOT EXISTS "chall_article" (
                                                "id" SERIAL PRIMARY KEY,
@@ -46,18 +48,19 @@ CREATE TABLE IF NOT EXISTS "chall_article" (
     "date_updated" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
+-- Define the schema for the chall_commentaire table with cascading delete
 DROP TABLE IF EXISTS "chall_commentaire";
 CREATE TABLE IF NOT EXISTS "chall_commentaire" (
                                                    "id" SERIAL PRIMARY KEY,
                                                    "content" VARCHAR NOT NULL,
                                                    "user_id" INT NOT NULL,
                                                    "article_id" INT NOT NULL,
-                                                   FOREIGN KEY (article_id) REFERENCES public.chall_article(id),
-    FOREIGN KEY (user_id) REFERENCES public.chall_user(id),
+                                                   "reported" BOOLEAN DEFAULT FALSE;
+                                                   FOREIGN KEY (article_id) REFERENCES chall_article(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES chall_user(id),
     "date_inserted" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "date_updated" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
-
 DROP TABLE IF EXISTS chall_media;
 CREATE TABLE chall_media (
                             id SERIAL PRIMARY KEY,

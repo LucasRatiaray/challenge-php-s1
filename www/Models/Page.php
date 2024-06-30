@@ -64,12 +64,28 @@ class Page extends SQL
 
     public function save(): bool
     {
-        $sql = "INSERT INTO {$this->table} (title, content, description, user_id) VALUES (:title, :content, :description, :user_id)";
-        $stmt = $this->pdo->prepare($sql);
+        // Sanitize content before saving to prevent XSS
+        $this->content = htmlspecialchars($this->content, ENT_QUOTES, 'UTF-8');
+
+        if ($this->id !== null) {
+            // Update existing page
+            $sql = "UPDATE chall_page
+                SET title = :title, content = :content, description = :description, date_updated = NOW()
+                WHERE id = :id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+        } else {
+            // Insert new page
+            $sql = "INSERT INTO chall_page (title, content, description, user_id, date_inserted, date_updated)
+                VALUES (:title, :content, :description, :user_id, NOW(), NOW())";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':user_id', $this->user_id, PDO::PARAM_INT);
+        }
+
         $stmt->bindParam(':title', $this->title, PDO::PARAM_STR);
         $stmt->bindParam(':content', $this->content, PDO::PARAM_STR);
         $stmt->bindParam(':description', $this->description, PDO::PARAM_STR);
-        $stmt->bindParam(':user_id', $this->user_id, PDO::PARAM_INT);
+
         return $stmt->execute();
     }
 
@@ -96,5 +112,18 @@ class Page extends SQL
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
+    }
+
+    public function getCount(): int
+    {
+        $stmt = $this->pdo->query("SELECT COUNT(*) FROM chall_page");
+        return (int) $stmt->fetchColumn();
+    }
+
+
+    public function getLatestPage(): ?self
+    {
+        $stmt = $this->pdo->query("SELECT * FROM chall_page ORDER BY date_inserted DESC LIMIT 1");
+        return $stmt->fetchObject(self::class) ?: null;
     }
 }

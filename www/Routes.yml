@@ -52,6 +52,15 @@
   Controller: "PageController"
   Action: "view"
 
+/list-page:
+  Controller: "PageController"
+  Action: "list"
+
+/edit-page:
+  Controller: "PageController"
+  Action: "edit"
+  Method: "GET"
+
 /delete-page:
   Controller: "PageController"
   Action: "delete"

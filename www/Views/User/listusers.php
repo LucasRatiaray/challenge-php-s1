@@ -26,6 +26,7 @@
             <th>Prénom</th>
             <th>Nom</th>
             <th>Email</th>
+            <th>Role</th>
             <th>Actions</th>
           </tr>
           </thead>
@@ -40,6 +41,13 @@
               </td>
               <td>
                 <input type="email" name="users[<?= htmlspecialchars($user['id']) ?>][email]" value="<?= htmlspecialchars($user['email']) ?>">
+              </td>
+              <td>
+                <select name="users[<?= htmlspecialchars($user['id']) ?>][role]" class="browser-default" <?= ($user['id'] == $currentUserId) ? 'disabled' : '' ?>>
+                  <option value="admin" <?= $user['role'] == 'admin' ? 'selected' : '' ?>>Admin</option>
+                  <option value="contributor" <?= $user['role'] == 'contributor' ? 'selected' : '' ?>>Contributor</option>
+                  <option value="editor" <?= $user['role'] == 'editor' ? 'selected' : '' ?>>Editor</option>
+                </select>
               </td>
               <td>
                 <form action="/delete-user" method="post" style="display:inline;">

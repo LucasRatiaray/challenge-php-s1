@@ -271,15 +271,17 @@ class User extends SQL
     }
     public function update(): bool
     {
-        $sql = "UPDATE " . $this->table . " SET firstname = :firstname, lastname = :lastname, email = :email WHERE id = :id";
+        $sql = "UPDATE chall_user SET firstname = :firstname, lastname = :lastname, email = :email, role = :role, date_updated = NOW() WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
+
+        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
         $stmt->bindParam(':firstname', $this->firstname, PDO::PARAM_STR);
         $stmt->bindParam(':lastname', $this->lastname, PDO::PARAM_STR);
         $stmt->bindParam(':email', $this->email, PDO::PARAM_STR);
-        $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
+        $stmt->bindParam(':role', $this->role, PDO::PARAM_STR);
+
         return $stmt->execute();
     }
-
     public function getAllUsers(): array
     {
         $sql = "SELECT * FROM " . $this->table;
@@ -297,16 +299,25 @@ class User extends SQL
         return $stmt->execute();
     }
 
+
     public function save(): bool
     {
-        $this->role = $this->role ?? 'author'; // Définissez un rôle par défaut si aucun rôle n'est défini
-        $sql = "INSERT INTO " . $this->table . " (firstname, lastname, email, password, role) VALUES (:firstname, :lastname, :email, :password, :role)";
+        $sql = "INSERT INTO chall_user (firstname, lastname, email, password, role, date_inserted, date_updated)
+                VALUES (:firstname, :lastname, :email, :password, :role, NOW(), NOW())";
         $stmt = $this->pdo->prepare($sql);
+
         $stmt->bindParam(':firstname', $this->firstname, PDO::PARAM_STR);
         $stmt->bindParam(':lastname', $this->lastname, PDO::PARAM_STR);
         $stmt->bindParam(':email', $this->email, PDO::PARAM_STR);
         $stmt->bindParam(':password', $this->password, PDO::PARAM_STR);
         $stmt->bindParam(':role', $this->role, PDO::PARAM_STR);
+
         return $stmt->execute();
+    }
+
+    public function getCount(): int
+    {
+        $stmt = $this->pdo->query("SELECT COUNT(*) FROM chall_user");
+        return (int) $stmt->fetchColumn();
     }
 }

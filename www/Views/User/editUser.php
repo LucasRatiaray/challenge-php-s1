@@ -1,2 +1,3 @@
-<h1>Editez votre profil</h1>
+<h1>Editer un utilisateur</h1>
+
 <?= $form ?>

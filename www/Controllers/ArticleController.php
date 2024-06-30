@@ -36,7 +36,7 @@ class ArticleController
             $article->setUserId($_SESSION['user_id']);
 
             if ($article->save()) {
-                header("Location: /dashboard");
+                header("Location: /list-article");
                 exit();
             } else {
                 echo "There was an error saving the article.";
@@ -111,7 +111,7 @@ class ArticleController
                     $article->setId($articleId); // Ensure the ID is set for updating
                     $article->save();
 
-                    header('Location: /dashboard');
+                    header('Location: /list-articles');
                     exit();
                 }
 

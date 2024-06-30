@@ -13,6 +13,13 @@
     .main-content {
       padding-left: 250px;
     }
+    .stats-card {
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .latest-section {
+      margin-bottom: 40px;
+    }
   </style>
 </head>
 <body>
@@ -25,13 +32,99 @@
       <li><a href="/list-users">Voir tous les utilisateurs</a></li>
     <?php endif; ?>
   <li><a href="/list-articles">List Articles</a></li>
-  <li><a href="/media">Media</a></li> <!-- Added Media link -->
+  <li><a href="/list-page">List Pages</a></li> <!-- Added List Pages link -->
+  <li><a href="/media">Media</a></li>
   <li><a href="/logout">Logout</a></li>
 </ul>
 
 <!-- Main Content -->
 <div class="main-content">
   <h1>Welcome to the Dashboard</h1>
+
+  <!-- Stats Section -->
+  <div class="row">
+    <div class="col s12 m6 l4">
+      <div class="card stats-card blue lighten-4">
+        <div class="card-content">
+          <span class="card-title">Total Users</span>
+          <h3><?= $totalUsers ?></h3>
+        </div>
+      </div>
+    </div>
+    <div class="col s12 m6 l4">
+      <div class="card stats-card green lighten-4">
+        <div class="card-content">
+          <span class="card-title">Total Pages</span>
+          <h3><?= $totalPages ?></h3>
+        </div>
+      </div>
+    </div>
+    <div class="col s12 m6 l4">
+      <div class="card stats-card orange lighten-4">
+        <div class="card-content">
+          <span class="card-title">Total Articles</span>
+          <h3><?= $totalArticles ?></h3>
+        </div>
+      </div>
+    </div>
+    <div class="col s12 m6 l4">
+      <div class="card stats-card red lighten-4">
+        <div class="card-content">
+          <span class="card-title">Total Comments</span>
+          <h3><?= $totalComments ?></h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Latest Entries Section -->
+  <div class="latest-section">
+    <h2>Latest Entries</h2>
+
+    <div class="row">
+      <div class="col s12 m4">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">Latest Page</span>
+              <?php if ($latestPage): ?>
+                <p>Title: <?= htmlspecialchars($latestPage->getTitle()) ?></p>
+                <p>Description: <?= htmlspecialchars($latestPage->getDescription()) ?></p>
+              <?php else: ?>
+                <p>No pages found.</p>
+              <?php endif; ?>
+          </div>
+        </div>
+      </div>
+      <div class="col s12 m4">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">Latest Article</span>
+              <?php if ($latestArticle): ?>
+                <p>Title: <?= htmlspecialchars($latestArticle->getTitle()) ?></p>
+                <p>Description: <?= htmlspecialchars($latestArticle->getDescription()) ?></p>
+              <?php else: ?>
+                <p>No articles found.</p>
+              <?php endif; ?>
+          </div>
+        </div>
+      </div>
+      <div class="col s12 m4">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">Latest Comment</span>
+              <?php if ($latestComment): ?>
+                <p>Content: <?= htmlspecialchars($latestComment->getContent()) ?></p>
+                <p>User ID: <?= htmlspecialchars($latestComment->getUserId()) ?></p>
+              <?php else: ?>
+                <p>No comments found.</p>
+              <?php endif; ?>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pages List -->
     <?php if (!empty($pages)): ?>
       <table>
         <thead>

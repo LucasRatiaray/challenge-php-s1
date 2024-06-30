@@ -87,6 +87,8 @@ class UserController
                 $user->setLastname($_POST['lastname']);
                 $user->setEmail($_POST['email']);
                 $user->setPassword($_POST['password']);
+                $user->setRole($_POST['role']);
+
 
                 if ($user->save()) {
                     header("Location: /list-users");
@@ -98,7 +100,6 @@ class UserController
                 $formHtml = $form->build();
                 $view = new View("User/addUser");
                 $view->assign("userForm", $formHtml);
-                $view->assign("errors", $form->getErrors());
                 $view->render();
             }
         } else {
@@ -232,6 +233,7 @@ class UserController
                         $user->setFirstname($userData['firstname']);
                         $user->setLastname($userData['lastname']);
                         $user->setEmail($userData['email']);
+                        $user->setRole($userData['role']); // Ensure role is set
                         $user->update();
                     }
                     header("Location: /list-users");

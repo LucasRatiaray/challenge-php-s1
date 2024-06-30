@@ -1,14 +1,15 @@
 <?php
 namespace App\Forms;
+
 class UserForm
 {
     public static function getConfig(): array
     {
         return [
-            "config"=>[
-                "action"=>"",
-                "method"=>"POST",
-                "submit"=>"Valider"
+            "config" => [
+                "action" => "",
+                "method" => "POST",
+                "submit" => "Valider"
             ],
             "inputs" => [
                 "firstname" => [
@@ -39,7 +40,7 @@ class UserForm
                     "type" => "password",
                     "placeholder" => "Votre mot de passe",
                     "required" => true,
-                    "error" => "Votre mot de passe doit faire au minimum 8 caractères avec des lettres minscules, majuscules et des chiffres"
+                    "error" => "Votre mot de passe doit faire au minimum 8 caractères avec des lettres minuscules, majuscules et des chiffres"
                 ],
                 "passwordConfirm" => [
                     "type" => "password",
@@ -47,6 +48,16 @@ class UserForm
                     "required" => true,
                     "confirm" => "password",
                     "error" => "La confirmation ne correspond pas"
+                ],
+                "role" => [
+                    "type" => "select",
+                    "options" => [
+                        "contributor" => "Contributor",
+                        "editor" => "Editor"
+                    ],
+                    "placeholder" => "Role",
+                    "required" => true,
+                    "error" => "Please select a role"
                 ],
             ]
         ];

@@ -2,8 +2,6 @@
 
 namespace App\Core;
 
-use App\Forms\Register;
-
 class Form
 {
     private $config;
@@ -24,32 +22,47 @@ class Form
         $html = "";
 
         if (!empty($this->errors)) {
+            $html .= "<ul>";
             foreach ($this->errors as $error) {
                 $html .= "<li>" . $error . "</li>";
             }
+            $html .= "</ul>";
         }
 
-        $html .= "<form action='" . $this->config["config"]["action"] . "' method='" . $this->config["config"]["method"] . "'>";
+        $html .= "<form action='" . $this->config["config"]["action"] . "' method='" . $this->config["config"]["method"] . "' enctype='multipart/form-data'>";
 
         foreach ($this->config["inputs"] as $name => $input) {
             $value = isset($input["value"]) ? $input["value"] : "";
-            $html .= "
-            <input 
-                type='" . $input["type"] . "' 
-                name='" . $name . "' 
-                value='" . htmlspecialchars($value) . "' 
-                placeholder='" . $input["placeholder"] . "'
-                " . (isset($input["required"]) && $input["required"] ? "required" : "") . "
+            $html .= "<div class='input-field'>";
+            if ($input["type"] == "select") {
+                $html .= "<label for='$name'>" . $input["placeholder"] . "</label>";
+                $html .= "<select name='" . $name . "' id='$name'>";
+                $html .= "<option value='' disabled selected>" . $input["placeholder"] . "</option>";
+                foreach ($input["options"] as $optionValue => $optionText) {
+                    $selected = $value == $optionValue ? "selected" : "";
+                    $html .= "<option value='" . htmlspecialchars($optionValue) . "' $selected>" . htmlspecialchars($optionText) . "</option>";
+                }
+                $html .= "</select>";
+            } else {
+                $html .= "
+                <label for='$name'>" . $input["placeholder"] . "</label>
+                <input 
+                    type='" . $input["type"] . "' 
+                    name='" . $name . "' 
+                    id='" . $name . "'
+                    value='" . htmlspecialchars($value) . "' 
+                    " . (isset($input["required"]) && $input["required"] ? "required" : "") . "
                 ><br>
-        ";
+                ";
+            }
+            $html .= "</div>";
         }
 
-        $html .= "<input type='submit' value='" . htmlentities($this->config["config"]["submit"]) . "'>";
+        $html .= "<button class='btn' type='submit'>" . htmlentities($this->config["config"]["submit"]) . "</button>";
         $html .= "</form>";
 
         return $html;
     }
-
 
     public function setValues(array $values): void
     {

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use App\Core\SQL;
@@ -87,6 +86,8 @@ class Commentaire extends SQL
             return $stmt->execute();
         } catch (PDOException $e) {
             error_log("Error saving comment: " . $e->getMessage());
+            error_log("SQLSTATE: " . $e->getCode());
+            error_log("SQL Query: " . $sql);
             return false;
         }
     }
@@ -123,7 +124,6 @@ class Commentaire extends SQL
         return $stmt->fetchObject(self::class) ?: null;
     }
 
-
     public function delete(): bool
     {
         $sql = "DELETE FROM chall_commentaire WHERE id = :id";
@@ -136,5 +136,19 @@ class Commentaire extends SQL
             error_log("Error deleting comment: " . $e->getMessage());
             return false;
         }
+    }
+
+
+    public function getCount(): int
+    {
+        $stmt = $this->pdo->query("SELECT COUNT(*) FROM chall_commentaire");
+        return (int) $stmt->fetchColumn();
+    }
+
+
+    public function getLatestComment(): ?self
+    {
+        $stmt = $this->pdo->query("SELECT * FROM chall_commentaire ORDER BY date_inserted DESC LIMIT 1");
+        return $stmt->fetchObject(self::class) ?: null;
     }
 }

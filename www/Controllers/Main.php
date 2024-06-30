@@ -1,9 +1,13 @@
 <?php
+
 namespace App\Controller;
+
 use App\Core\Security as Auth;
 use App\Core\View;
 use App\Models\Page;
 use App\Models\User;
+use App\Models\Article;
+use App\Models\Commentaire;
 
 class Main
 {
@@ -13,37 +17,54 @@ class Main
             session_start();
         }
     }
+
     public function home()
     {
-        //Appeler un template Front et la vue Main/Home
         $view = new View("Main/home", "Back");
-        //$view->setView("Main/Home");
-        //$view->setTemplate("Front");
         $view->render();
     }
+
     public function logout()
     {
-        //Déconnexion
-        //Redirection
+        // Logout logic
     }
 
-
-        public function dashboard(): void
+    public function dashboard(): void
     {
         $security = new Auth();
         if (!$security->isLogged() || !$security->hasRole(['admin', 'author'])) {
             header("Location: /register");
             exit();
         }
-        $page = new Page();
+
+        $pageModel = new Page();
+        $userModel = new User();
+        $articleModel = new Article();
+        $commentaireModel = new Commentaire();
+
         $userId = $_SESSION['user_id'];
-        $user = new User();
-        $userInfo = $user->getUserById($userId);
-        $pages = $page->getAllPages();
+        $user = $userModel->getUserById($userId);
+
+        $pages = $pageModel->getAllPages();
+        $latestPage = $pageModel->getLatestPage();
+        $latestArticle = $articleModel->getLatestArticle();
+        $latestComment = $commentaireModel->getLatestComment();
+
+        $totalUsers = $userModel->getCount();
+        $totalPages = $pageModel->getCount();
+        $totalArticles = $articleModel->getCount();
+        $totalComments = $commentaireModel->getCount();
+
         $view = new View("Main/dashboard");
         $view->assign('pages', $pages);
-        $view->assign("userRole", $userInfo['role']);
+        $view->assign('latestPage', $latestPage);
+        $view->assign('latestArticle', $latestArticle);
+        $view->assign('latestComment', $latestComment);
+        $view->assign('totalUsers', $totalUsers);
+        $view->assign('totalPages', $totalPages);
+        $view->assign('totalArticles', $totalArticles);
+        $view->assign('totalComments', $totalComments);
+        $view->assign("userRole", $user['role']);
         $view->render();
     }
-
 }

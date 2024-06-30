@@ -67,36 +67,33 @@ class PageController
         $view->render();
     }
 
-    public function list(): void
+
+
+    public function list()
     {
-        $user = (new User())->getUserById($_SESSION['user_id']);
-        $pages = new Page();
-        $pages ->getAllPages();
-        $view = new View("Page/home", "back");
-        $view->assign('pages', $pages);
+        $pageModel = new Page();
+        $pages = $pageModel->getAllPages();
+        $view = new View("Page/listPage");
+        $view->assign("pages", $pages);
         $view->render();
     }
 
     public function view()
     {
         if (!isset($_GET['id'])) {
-            echo "No article ID specified.";
+            echo "No page ID specified.";
             return;
         }
 
-        $articleId = $_GET['id'];
-        $article = (new Article())->getArticleById($articleId);
-        if ($article === null) {
-            echo "Article not found.";
+        $pageId = $_GET['id'];
+        $page = (new Page())->getPageById($pageId);
+        if ($page === null) {
+            echo "Page not found.";
             return;
         }
 
-        // Fetch comments for the article
-        $comments = (new Commentaire())->getCommentsByArticleId($articleId);
-
-        $view = new View("Article/viewArticle");
-        $view->assign("article", $article);
-        $view->assign("comments", $comments); // Pass comments to the view
+        $view = new View("Page/viewPage");
+        $view->assign("page", $page);
         $view->render();
     }
 
@@ -124,5 +121,43 @@ class PageController
             echo "There was an error deleting the page.";
         }
     }
+
+
+    public function edit(): void
+    {
+        if (isset($_GET['id'])) {
+            $pageId = intval($_GET['id']);
+            $page = (new Page())->getPageById($pageId);
+
+            if ($page) {
+                $articleForm = new Form("EditPage");
+                $articleForm->setValues([
+                    'title' => $page->getTitle(),
+                    'description' => $page->getDescription(),
+                    'content' => $page->getContent()
+                ]);
+
+                if ($articleForm->isSubmitted() && $articleForm->isValid()) {
+                    $page->setTitle($_POST['title']);
+                    $page->setDescription($_POST['description']);
+                    $page->setContent($_POST['content']);
+                    $page->setId($pageId);
+                    $page->save();
+
+                    header('Location: /list-page');
+                    exit();
+                }
+
+                $view = new View("Page/editPage");
+                $view->assign('form', $articleForm->build());
+                $view->render();
+            } else {
+                echo "Article non trouvé !";
+            }
+        } else {
+            echo "ID article non spécifié !";
+        }
+    }
+
 
 }
