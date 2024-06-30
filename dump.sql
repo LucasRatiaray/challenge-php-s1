@@ -71,6 +71,15 @@ CREATE TABLE chall_media (
                             date_updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+
+CREATE TABLE IF NOT EXISTS chall_config (
+                                            id SERIAL PRIMARY KEY,
+                                            background_color VARCHAR(7) DEFAULT '#ffffff',
+    font_color VARCHAR(7) DEFAULT '#000000',
+    font_size VARCHAR(10) DEFAULT '16px',
+    font_style VARCHAR(50) DEFAULT 'normal'
+    );
+
 -- Définir un déclencheur pour mettre à jour la colonne `date_updated`
 CREATE OR REPLACE FUNCTION update_date_updated()
 RETURNS TRIGGER AS $$
