@@ -170,3 +170,11 @@
 /delete-article:
   Controller: "ArticleController"
   Action: "delete"
+
+/customize:
+  Controller: "Main"
+  Action: "customize"
+
+/update-config:
+  Controller: "CustomizeController"
+  Action: "updateConfig"

@@ -127,7 +127,7 @@ class UserController
         }
 
         $users = $user->getAllUsers();
-        $view = new View("User/listUsers");
+        $view = new View("User/listUsers", "back");
         $view->assign("users", $users);
         $view->render();
     }
@@ -227,13 +227,23 @@ class UserController
                 if (isset($_POST['users'])) {
                     $usersData = $_POST['users'];
                     $user = new User();
+                    $currentUserId = $_SESSION['user_id'];
 
                     foreach ($usersData as $userId => $userData) {
                         $user->setId(intval($userId));
                         $user->setFirstname($userData['firstname']);
                         $user->setLastname($userData['lastname']);
                         $user->setEmail($userData['email']);
-                        $user->setRole($userData['role']); // Ensure role is set
+
+                        // Only update role if it's set in the form data and it's not the current user
+                        if (isset($userData['role']) && $userId != $currentUserId) {
+                            $user->setRole($userData['role']);
+                        } elseif ($userId == $currentUserId) {
+                            // For the current user, retain their existing role
+                            $userInfo = $user->getUserById($userId);
+                            $user->setRole($userInfo['role']);
+                        }
+
                         $user->update();
                     }
                     header("Location: /list-users");
@@ -248,5 +258,6 @@ class UserController
             echo "User not logged in.";
         }
     }
+
 
 }

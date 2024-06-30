@@ -32,10 +32,12 @@
       <li><a href="/list-users">Voir tous les utilisateurs</a></li>
     <?php endif; ?>
   <li><a href="/list-articles">List Articles</a></li>
-  <li><a href="/list-page">List Pages</a></li> <!-- Added List Pages link -->
+  <li><a href="/list-page">List Pages</a></li>
   <li><a href="/media">Media</a></li>
+  <li><a href="/customize">Customiser</a></li> <!-- New entry -->
   <li><a href="/logout">Logout</a></li>
 </ul>
+
 
 <!-- Main Content -->
 <div class="main-content">
@@ -124,35 +126,6 @@
     </div>
   </div>
 
-  <!-- Pages List -->
-    <?php if (!empty($pages)): ?>
-      <table>
-        <thead>
-        <tr>
-          <th>Title</th>
-          <th>Content</th>
-          <th>Description</th>
-          <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <?php foreach ($pages as $page): ?>
-          <tr>
-            <td><?= htmlspecialchars($page->getTitle()) ?></td>
-            <td><?= htmlspecialchars($page->getContent()) ?></td>
-            <td><?= htmlspecialchars($page->getDescription()) ?></td>
-            <td>
-              <a href="/view-page?id=<?= $page->getId() ?>" class="btn">View</a>
-              <a href="/edit-page?id=<?= $page->getId() ?>" class="btn">Edit</a>
-              <a href="/delete-page?id=<?= $page->getId() ?>" class="btn red" onclick="return confirm('Are you sure you want to delete this page?')">Delete</a>
-            </td>
-          </tr>
-        <?php endforeach; ?>
-        </tbody>
-      </table>
-    <?php else: ?>
-      <p>No pages found.</p>
-    <?php endif; ?>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>

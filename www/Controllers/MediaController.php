@@ -27,7 +27,7 @@ class MediaController
     public function index()
     {
         $images = (new Media())->findAll();
-        $view = new View("Media/list");
+        $view = new View("Media/list", "front");
         $view->assign("images", $images);
         $view->render();
     }

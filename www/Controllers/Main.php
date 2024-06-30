@@ -67,4 +67,10 @@ class Main
         $view->assign("userRole", $user['role']);
         $view->render();
     }
+
+    public function customize()
+    {
+        $view = new View("Main/customize");
+        $view->render();
+    }
 }
