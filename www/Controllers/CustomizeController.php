@@ -2,20 +2,27 @@
 
 namespace App\Controller;
 
+use App\Core\Security;
 use App\Core\View;
 use App\Models\Config;
 
 class CustomizeController
-{
+
+{    private $security;
+
+
     public function __construct()
-    {
+    { $this->security = new Security();
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
+
+        $this->checkLogin();
     }
 
     public function showForm()
     {
+
         $configModel = new Config();
         $config = $configModel->getConfig();
 
@@ -26,6 +33,7 @@ class CustomizeController
 
     public function updateConfig()
     {
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $configModel = new Config();
             $config = $configModel->getConfig();
@@ -41,6 +49,14 @@ class CustomizeController
             } else {
                 echo "There was an error updating the configuration.";
             }
+        }
+    }
+
+    private function checkLogin()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /login");
+            exit();
         }
     }
 }

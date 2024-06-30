@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Core\Security;
 use App\Core\View;
 use App\Core\Form;
 use App\Core\Security as Auth;
@@ -10,21 +11,22 @@ use App\Forms\EditUser;
 
 class UserController
 {
-    private function checkSession(): bool
-    {
+
+    private $security;
+
+
+    public function __construct()
+    { $this->security = new Security();
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
 
-        return isset($_SESSION['user_id']);
+        $this->checkLogin();
     }
 
     public function delete(): void
     {
-        if (!$this->checkSession()) {
-            echo "User not logged in.";
-            return;
-        }
+
 
         $security = new Auth();
         if (!$security->hasRole(['admin'])) {
@@ -50,10 +52,7 @@ class UserController
 
     public function profil(): void
     {
-        if (!$this->checkSession()) {
-            echo "User not logged in.";
-            return;
-        }
+
 
         $userId = $_SESSION['user_id'];
         $user = new User();
@@ -67,10 +66,6 @@ class UserController
 
     public function add(): void
     {
-        if (!$this->checkSession()) {
-            echo "User not logged in.";
-            return;
-        }
 
         $security = new Auth();
         if (!$security->hasRole(['admin'])) {
@@ -112,10 +107,6 @@ class UserController
 
     public function list(): void
     {
-        if (!$this->checkSession()) {
-            echo "User not logged in.";
-            return;
-        }
 
         $userId = $_SESSION['user_id'];
         $user = new User();
@@ -134,10 +125,6 @@ class UserController
 
     public function edit(): void
     {
-        if (!$this->checkSession()) {
-            echo "User not logged in.";
-            return;
-        }
 
         if (isset($_GET['id'])) {
             $userId = intval($_GET['id']);
@@ -159,10 +146,7 @@ class UserController
 
     public function update(): void
     {
-        if (!$this->checkSession()) {
-            echo "User not logged in.";
-            return;
-        }
+
 
         $security = new Auth();
         if (!$security->hasRole(['admin'])) {
@@ -171,7 +155,7 @@ class UserController
         }
 
         if (isset($_POST['id']) && !empty($_POST['id'])) {
-            $userId = intval($_POST['id']); // Assurez-vous que l'ID est un entier
+            $userId = intval($_POST['id']);
             $user = new User();
             $user->setId($userId);
             $user->setFirstname($_POST['firstname']);
@@ -191,10 +175,7 @@ class UserController
 
     public function editUser(): void
     {
-        if (!$this->checkSession()) {
-            echo "User not logged in.";
-            return;
-        }
+
 
         if (isset($_GET['id'])) {
             $userId = intval($_GET['id']);
@@ -235,11 +216,9 @@ class UserController
                         $user->setLastname($userData['lastname']);
                         $user->setEmail($userData['email']);
 
-                        // Only update role if it's set in the form data and it's not the current user
                         if (isset($userData['role']) && $userId != $currentUserId) {
                             $user->setRole($userData['role']);
                         } elseif ($userId == $currentUserId) {
-                            // For the current user, retain their existing role
                             $userInfo = $user->getUserById($userId);
                             $user->setRole($userInfo['role']);
                         }
@@ -258,6 +237,15 @@ class UserController
             echo "User not logged in.";
         }
     }
+
+    private function checkLogin()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /login");
+            exit();
+        }
+    }
+
 
 
 }

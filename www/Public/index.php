@@ -34,35 +34,49 @@ function myAutoloader($class){
 //A envoyer avant 13 le 01/03/2024-
 
 //http://localhost/login
+
+
+function slugToUrl($uri, $routes) {
+    foreach ($routes as $route => $data) {
+        $pattern = preg_replace('/\{[a-zA-Z0-9_]+\}/', '([^/]+)', $route);
+        if (preg_match('#^' . $pattern . '$#', $uri, $matches)) {
+            array_shift($matches);
+            // Utiliser les noms de paramètres du route pour créer le tableau de paramètres
+            $keys = [];
+            preg_match_all('/\{([a-zA-Z0-9_]+)\}/', $route, $keys);
+            $params = array_combine($keys[1], $matches);
+            return [$route, $params];
+        }
+    }
+    return [null, []];
+}
 $uri = $_SERVER["REQUEST_URI"];
 if(strlen($uri) > 1)
     $uri = rtrim($uri, "/");
 $uriExploded = explode("?",$uri);
 $uri = $uriExploded[0];
 
-
 if(file_exists("../Routes.yml")) {
     $listOfRoutes = yaml_parse_file("../Routes.yml");
-}else{
+} else {
     header("Internal Server Error", true, 500);
     die("Le fichier de routing ../Routes.yml n'existe pas");
 }
 
-if(empty($listOfRoutes[$uri])) {
+list($requestedRoute, $params) = slugToUrl($uri, $listOfRoutes);
+
+if(empty($listOfRoutes[$requestedRoute])) {
     header("Status 404 Not Found", true, 404);
     die("Page 404");
 }
 
-if(empty($listOfRoutes[$uri]["Controller"]) || empty($listOfRoutes[$uri]["Action"]) ) {
+if(empty($listOfRoutes[$requestedRoute]["Controller"]) || empty($listOfRoutes[$requestedRoute]["Action"]) ) {
     header("Internal Server Error", true, 500);
     die("Le fichier routes.yml ne contient pas de controller ou d'action pour l'uri :".$uri);
 }
 
-$controller = $listOfRoutes[$uri]["Controller"];
-$action = $listOfRoutes[$uri]["Action"];
-
-
-
+$controller = $listOfRoutes[$requestedRoute]["Controller"];
+$action = $listOfRoutes[$requestedRoute]["Action"];
 
 //include "../Controllers/".$controller.".php";
 if(!file_exists("../Controllers/".$controller.".php")){
@@ -80,10 +94,5 @@ $objetController = new $controller();
 if( !method_exists($controller, $action) ){
     die("Le methode ".$action." n'existe pas dans le controller ".$controller);
 }
-$objetController->$action();
-
-
-
-
-
+$objetController->$action($params);
 

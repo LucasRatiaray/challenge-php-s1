@@ -139,6 +139,7 @@ class User extends SQL
         return $this->token;
     }
 
+
     public function exists($email): bool
     {
         $sql = "SELECT id FROM " . $this->table . " WHERE email = :email";

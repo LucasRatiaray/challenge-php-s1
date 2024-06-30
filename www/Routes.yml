@@ -48,7 +48,7 @@
   Controller: "PageController"
   Action: "store"
 
-/view-page:
+/view-page/{slug}:
   Controller: "PageController"
   Action: "view"
 
@@ -60,10 +60,12 @@
   Controller: "PageController"
   Action: "edit"
   Method: "GET"
+  Role: ["admin", "editor"]
 
 /delete-page:
   Controller: "PageController"
   Action: "delete"
+  Role: ["admin", "editor"]
 
 /create-article:
   Controller: "ArticleController"
@@ -100,6 +102,7 @@
 /delete-user:
   Controller: "UserController"
   Action: "delete"
+  Role: ["admin"]
 
 /update-profil:
   Controller: "UserController"
@@ -126,11 +129,13 @@
   Controller: "UserController"
   Action: "updateUsersInline"
   Method: "POST"
+  Role: ["admin"]
 
 /add-user:
   Controller: "UserController"
   Action: "add"
   Method: "GET,POST"
+  Role: ["admin"]
 
 /media:
   Controller: "MediaController"
@@ -145,6 +150,7 @@
   Controller: "MediaController"
   Action: "delete"
   Method: "GET,POST"
+  Role: ["admin", "editor"]
 
 /report-comment:
   Controller: "CommentaireController"
@@ -155,21 +161,24 @@
   Controller: "CommentaireController"
   Action: "delete"
   Method: "POST"
-
+  Role: ["admin", "editor"]
 
 /edit-article:
   Controller: "ArticleController"
   Action: "edit"
   Method: "GET"
+  Role: ["admin", "editor"]
 
 /update-article:
   Controller: "ArticleController"
   Action: "update"
   Method: "POST"
+  Role: ["admin", "editor"]
 
 /delete-article:
   Controller: "ArticleController"
   Action: "delete"
+  Role: ["admin", "editor"]
 
 /customize:
   Controller: "Main"

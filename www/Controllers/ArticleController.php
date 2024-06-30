@@ -4,20 +4,27 @@ namespace App\Controller;
 
 use App\Core\Form;
 use App\Core\View;
+use App\Core\Security;
 use App\Models\Article;
 use App\Models\Commentaire;
 
 class ArticleController
 {
+    private $security;
+
+
     public function __construct()
-    {
+    { $this->security = new Security();
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
+
+        $this->checkLogin();
     }
 
     public function create()
     {
+
         $form = new Form("CreateArticle");
         $view = new View("Article/createArticle");
         $view->assign("form", $form->build());
@@ -26,6 +33,7 @@ class ArticleController
 
     public function store()
     {
+
         $form = new Form("CreateArticle");
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -36,7 +44,7 @@ class ArticleController
             $article->setUserId($_SESSION['user_id']);
 
             if ($article->save()) {
-                header("Location: /list-article");
+                header("Location: /list-articles");
                 exit();
             } else {
                 echo "There was an error saving the article.";
@@ -51,6 +59,7 @@ class ArticleController
 
     public function view()
     {
+
         if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
             echo "Invalid article ID specified.";
             return;
@@ -73,6 +82,7 @@ class ArticleController
 
     public function list()
     {
+
         $articleModel = new Article();
         $articles = $articleModel->getAllArticles();
         $view = new View("Article/listArticle");
@@ -82,6 +92,7 @@ class ArticleController
 
     public function addComment()
     {
+
         $articleId = $_GET['id'];
         $form = new Form("CommentaireForm");
         $view = new View("Commentaire/addCommentaire");
@@ -92,6 +103,7 @@ class ArticleController
 
     public function edit(): void
     {
+
         if (isset($_GET['id'])) {
             $articleId = intval($_GET['id']);
             $article = (new Article())->getArticleById($articleId);
@@ -108,7 +120,7 @@ class ArticleController
                     $article->setTitle($_POST['title']);
                     $article->setDescription($_POST['description']);
                     $article->setContent($_POST['content']);
-                    $article->setId($articleId); // Ensure the ID is set for updating
+                    $article->setId($articleId);
                     $article->save();
 
                     header('Location: /list-articles');
@@ -126,16 +138,21 @@ class ArticleController
         }
     }
 
-
     public function delete(): void
     {
+
+        if (!$this->security->hasRole(['admin', 'editor'])) {
+            echo "Vous n'avez pas les droits nécessaires pour supprimer cet article.";
+            return;
+        }
+
         if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             $articleId = intval($_GET['id']);
             $article = (new Article())->getArticleById($articleId);
 
             if ($article) {
                 $article->delete();
-                header('Location: /dashboard');
+                header('Location: /list-articles');
                 exit();
             } else {
                 echo "Article non trouvé !";
@@ -144,4 +161,13 @@ class ArticleController
             echo "ID article non spécifié !";
         }
     }
+
+    private function checkLogin()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /login");
+            exit();
+        }
+    }
+
 }

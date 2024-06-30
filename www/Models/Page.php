@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Core\SQL;
@@ -11,6 +12,7 @@ class Page extends SQL
     protected string $content;
     protected ?string $description = null;
     protected int $user_id;
+    protected string $slug;
 
     public function getId(): ?int
     {
@@ -62,6 +64,16 @@ class Page extends SQL
         $this->user_id = $user_id;
     }
 
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): void
+    {
+        $this->slug = $this->generateUniqueSlug($slug);
+    }
+
     public function save(): bool
     {
         // Sanitize content before saving to prevent XSS
@@ -70,14 +82,14 @@ class Page extends SQL
         if ($this->id !== null) {
             // Update existing page
             $sql = "UPDATE chall_page
-                SET title = :title, content = :content, description = :description, date_updated = NOW()
-                WHERE id = :id";
+                    SET title = :title, content = :content, description = :description, slug = :slug, date_updated = NOW()
+                    WHERE id = :id";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':id', $this->id, PDO::PARAM_INT);
         } else {
             // Insert new page
-            $sql = "INSERT INTO chall_page (title, content, description, user_id, date_inserted, date_updated)
-                VALUES (:title, :content, :description, :user_id, NOW(), NOW())";
+            $sql = "INSERT INTO chall_page (title, content, description, user_id, slug, date_inserted, date_updated)
+                    VALUES (:title, :content, :description, :user_id, :slug, NOW(), NOW())";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(':user_id', $this->user_id, PDO::PARAM_INT);
         }
@@ -85,6 +97,7 @@ class Page extends SQL
         $stmt->bindParam(':title', $this->title, PDO::PARAM_STR);
         $stmt->bindParam(':content', $this->content, PDO::PARAM_STR);
         $stmt->bindParam(':description', $this->description, PDO::PARAM_STR);
+        $stmt->bindParam(':slug', $this->slug, PDO::PARAM_STR);
 
         return $stmt->execute();
     }
@@ -96,11 +109,21 @@ class Page extends SQL
         return $stmt->fetchAll(PDO::FETCH_CLASS, 'App\Models\Page');
     }
 
-    public function getPageById(int $id): ?Page
+    public function getPageById(int $id): ?self
     {
         $sql = "SELECT * FROM chall_page WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $stmt->setFetchMode(PDO::FETCH_CLASS, 'App\Models\Page');
+        return $stmt->fetch() ?: null;
+    }
+
+    public function getPageBySlug(string $slug): ?self
+    {
+        $sql = "SELECT * FROM chall_page WHERE slug = :slug";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_CLASS, 'App\Models\Page');
         return $stmt->fetch() ?: null;
@@ -120,10 +143,39 @@ class Page extends SQL
         return (int) $stmt->fetchColumn();
     }
 
-
     public function getLatestPage(): ?self
     {
         $stmt = $this->pdo->query("SELECT * FROM chall_page ORDER BY date_inserted DESC LIMIT 1");
         return $stmt->fetchObject(self::class) ?: null;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'content' => $this->content,
+            'description' => $this->description,
+            'user_id' => $this->user_id,
+            'slug' => $this->slug,
+        ];
+    }
+
+    private function generateUniqueSlug($slug, $counter = 0)
+    {
+        $originalSlug = $slug;
+        while ($this->isSlugExists($slug)) {
+            $slug = $originalSlug . '-' . ++$counter;
+        }
+        return $slug;
+    }
+
+    private function isSlugExists($slug)
+    {
+        $sql = "SELECT COUNT(*) FROM chall_page WHERE slug = :slug";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
+        $stmt->execute();
+        return (int) $stmt->fetchColumn() > 0;
     }
 }

@@ -1,14 +1,11 @@
 <?php
+
 namespace App\Controller;
 
 use App\Core\Security as Auth;
 use App\Core\View;
 use App\Core\Form;
-use App\Models\Article;
-use App\Models\Commentaire;
 use App\Models\Page;
-use App\Forms\CreatePage;
-use App\Models\User;
 
 class PageController
 {
@@ -17,6 +14,8 @@ class PageController
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
+
+        $this->checkLogin();
     }
 
     public function create()
@@ -38,11 +37,11 @@ class PageController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $page = new Page();
-            $content = strip_tags($_POST["content"]);
             $page->setTitle($_POST['title']);
-            $page->setContent($content);
+            $page->setContent($_POST['content']);
             $page->setDescription($_POST['description'] ?? null);
             $page->setUserId($_SESSION['user_id']);
+            $page->setSlug($_POST['slug']);
 
             if ($page->save()) {
                 header("Location: /dashboard");
@@ -67,8 +66,6 @@ class PageController
         $view->render();
     }
 
-
-
     public function list()
     {
         $pageModel = new Page();
@@ -78,15 +75,15 @@ class PageController
         $view->render();
     }
 
-    public function view()
+    public function view($params)
     {
-        if (!isset($_GET['id'])) {
-            echo "No page ID specified.";
+        if (!isset($params['slug'])) {
+            echo "No page slug specified.";
             return;
         }
 
-        $pageId = $_GET['id'];
-        $page = (new Page())->getPageById($pageId);
+        $slug = $params['slug'];
+        $page = (new Page())->getPageBySlug($slug);
         if ($page === null) {
             echo "Page not found.";
             return;
@@ -97,6 +94,49 @@ class PageController
         $view->render();
     }
 
+
+    public function edit()
+    {
+        $security = new Auth();
+        if (!$security->isLogged() || !$security->hasRole(['admin', 'author'])) {
+            header("Location: /login");
+            exit();
+        }
+
+        if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+            echo "Invalid page ID.";
+            return;
+        }
+
+        $pageId = (int)$_GET['id'];
+        $page = (new Page())->getPageById($pageId);
+
+        if ($page === null) {
+            echo "Page not found.";
+            return;
+        }
+
+        $form = new Form("EditPage");
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && $form->isSubmitted() && $form->isValid()) {
+            $page->setTitle($_POST['title']);
+            $page->setContent($_POST['content']);
+            $page->setDescription($_POST['description'] ?? null);
+            $page->setSlug($_POST['slug']);
+
+            if ($page->save()) {
+                header("Location: /dashboard");
+                exit();
+            } else {
+                echo "There was an error updating the page.";
+            }
+        } else {
+            $form->setValues($page->toArray());
+        }
+
+        $view = new View("Page/editPage");
+        $view->assign("form", $form->build());
+        $view->render();
+    }
 
     public function delete()
     {
@@ -122,42 +162,11 @@ class PageController
         }
     }
 
-
-    public function edit(): void
+    private function checkLogin()
     {
-        if (isset($_GET['id'])) {
-            $pageId = intval($_GET['id']);
-            $page = (new Page())->getPageById($pageId);
-
-            if ($page) {
-                $articleForm = new Form("EditPage");
-                $articleForm->setValues([
-                    'title' => $page->getTitle(),
-                    'description' => $page->getDescription(),
-                    'content' => $page->getContent()
-                ]);
-
-                if ($articleForm->isSubmitted() && $articleForm->isValid()) {
-                    $page->setTitle($_POST['title']);
-                    $page->setDescription($_POST['description']);
-                    $page->setContent($_POST['content']);
-                    $page->setId($pageId);
-                    $page->save();
-
-                    header('Location: /list-page');
-                    exit();
-                }
-
-                $view = new View("Page/editPage");
-                $view->assign('form', $articleForm->build());
-                $view->render();
-            } else {
-                echo "Article non trouvé !";
-            }
-        } else {
-            echo "ID article non spécifié !";
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /login");
+            exit();
         }
     }
-
-
 }

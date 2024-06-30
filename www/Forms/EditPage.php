@@ -28,6 +28,12 @@ class EditPage
                     "required" => true,
                     "error" => "Content must be at least 10 characters"
                 ],
+                "slug" => [
+                    "type" => "text",
+                    "max" => 60,
+                    "placeholder" => "Slug",
+                    "label" => "",
+                ],
                 "description" => [
                     "type" => "text",
                     "min" => 2,
