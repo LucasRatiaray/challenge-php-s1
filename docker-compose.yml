@@ -52,5 +52,19 @@ services:
     networks:
       - backend # Conteneur connecté au réseau backend
 
+  nginx:
+    container_name: nginx
+    restart: unless-stopped
+    image: nginx
+    ports:
+        - "80:80"
+        - "443:443"
+    depends_on:
+      - php-apache 
+    volumes:
+        - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - backend
+
 networks:
   backend: # On crée un réseau backend
