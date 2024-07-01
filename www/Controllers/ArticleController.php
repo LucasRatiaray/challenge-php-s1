@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Core\Form;
+use App\Core\Security as Auth;
 use App\Core\View;
 use App\Core\Security;
 use App\Models\Article;
@@ -19,8 +20,12 @@ class ArticleController
             session_start();
         }
 
-        $this->checkLogin();
-    }
+        $security = new Auth();
+
+        if (!$security->isLogged()) {
+            echo "Vous devez être connecté";
+            return;
+        }    }
 
     public function create()
     {

@@ -15,7 +15,12 @@ class PageController
             session_start();
         }
 
-        $this->checkLogin();
+        $security = new Auth();
+
+        if (!$security->isLogged()) {
+            echo "Vous devez vous  connectézz";
+            return;
+        }
     }
 
     public function create()
@@ -162,11 +167,4 @@ class PageController
         }
     }
 
-    private function checkLogin()
-    {
-        if (!isset($_SESSION['user_id'])) {
-            header("Location: /login");
-            exit();
-        }
-    }
 }

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Core\Security;
+use App\Core\Security as Auth;
 use App\Models\Commentaire;
 
 class CommentaireController
@@ -17,8 +18,12 @@ class CommentaireController
             session_start();
         }
 
-        $this->checkLogin();
-    }
+        $security = new Auth();
+
+        if (!$security->isLogged()) {
+            echo "Vous devez être connecté";
+            return;
+        }    }
 
 
     public function store()

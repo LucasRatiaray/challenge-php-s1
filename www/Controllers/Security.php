@@ -65,13 +65,20 @@ class Security
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user = new User();
+            $email = $_POST["email"];
+
+            if ($user->exists($email)) {
+                echo "Cette adresse e-mail est déjà utilisée.";
+                return;
+            }
+
             $user->setFirstname($_POST["firstname"]);
             $user->setLastname($_POST["lastname"]);
             $user->setPassword($_POST["password"]);
-            $user->setEmail($_POST["email"]);
+            $user->setEmail($email);
             $user->setRole(User::ROLE_ADMIN);
             $token = bin2hex(random_bytes(32));
-            $user->setToken($_POST["email"], $token);
+            $user->setToken($email, $token);
             $user->save();
 
             // Charger la configuration
@@ -80,7 +87,7 @@ class Security
             $mailer = new Mailer($config);
             // Définir les informations de l'e-mail
             $from = ['email' => 'admin@rebellab.tech', 'Rebellab' => 'Mailer'];
-            $to = ['email' => $_POST["email"], 'name' => $_POST["firstname"] . ' ' . $_POST["lastname"]];
+            $to = ['email' => $email, 'name' => $_POST["firstname"] . ' ' . $_POST["lastname"]];
             $subject = 'Confirmation de votre inscription';
             $confirmLink = 'http://localhost/confirm-email?token=' . $token;
             $body = "Cliquez sur ce lien pour confirmer votre inscription: <a href='$confirmLink'>Confirmer l'inscription</a>";
@@ -97,6 +104,7 @@ class Security
         $view->assign("form", $form->build());
         $view->render();
     }
+
 
     public function logout(): void
     {

@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
-use App\Core\Security;
-use App\Core\View;
 use App\Core\Form;
+use App\Core\Security;
 use App\Core\Security as Auth;
-use App\Models\User;
+use App\Core\View;
 use App\Forms\EditUser;
+use App\Models\User;
 
 class UserController
 {
@@ -16,18 +16,22 @@ class UserController
 
 
     public function __construct()
-    { $this->security = new Security();
+    {
+        $this->security = new Security();
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
 
-        $this->checkLogin();
+        $security = new Auth();
+
+        if (!$security->isLogged()) {
+            echo "Vous devez vous  connectézz";
+            return;
+        }
     }
 
     public function delete(): void
     {
-
-
         $security = new Auth();
         if (!$security->hasRole(['admin'])) {
             echo "Access denied.";
@@ -66,7 +70,6 @@ class UserController
 
     public function add(): void
     {
-
         $security = new Auth();
         if (!$security->hasRole(['admin'])) {
             echo "Access denied.";
@@ -78,18 +81,24 @@ class UserController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($form->isSubmitted() && $form->isValid()) {
                 $user = new User();
-                $user->setFirstname($_POST['firstname']);
-                $user->setLastname($_POST['lastname']);
-                $user->setEmail($_POST['email']);
-                $user->setPassword($_POST['password']);
-                $user->setRole($_POST['role']);
+                $email = $_POST['email'];
 
-
-                if ($user->save()) {
-                    header("Location: /list-users");
-                    exit();
+                // Vérifier si l'email existe déjà
+                if ($user->exists($email)) {
+                    echo "L'adresse email est déjà utilisée.";
                 } else {
-                    echo "There was an error adding the user.";
+                    $user->setFirstname($_POST['firstname']);
+                    $user->setLastname($_POST['lastname']);
+                    $user->setEmail($email);
+                    $user->setPassword($_POST['password']);
+                    $user->setRole($_POST['role']);
+
+                    if ($user->save()) {
+                        header("Location: /list-users");
+                        exit();
+                    } else {
+                        echo "There was an error adding the user.";
+                    }
                 }
             } else {
                 $formHtml = $form->build();
@@ -237,15 +246,6 @@ class UserController
             echo "User not logged in.";
         }
     }
-
-    private function checkLogin()
-    {
-        if (!isset($_SESSION['user_id'])) {
-            header("Location: /login");
-            exit();
-        }
-    }
-
 
 
 }
