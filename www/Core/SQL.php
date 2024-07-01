@@ -12,12 +12,14 @@ class SQL
     protected $table;
     private $dbname = 'challenge';
     private $id;
+    private $db_user = "challengers";
+    private $db_pass = "qlslfho097IhOIHD8681298";
 
     public function __construct()
     {
         $this->connect();
         try {
-            $this->pdo = new PDO("pgsql:host=db;dbname=".$this->dbname.";port=5432", "postgres", "postgres");
+            $this->pdo = new PDO("pgsql:host=db;dbname=".$this->dbname.";port=5432", $this->db_user, $this->db_pass);
         } catch (\Exception $e) {
             die("Erreur SQL : " . $e->getMessage());
         }
