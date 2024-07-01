@@ -1,15 +1,13 @@
 version: '3'
 services:
-
   ##########################################################################
   # PHP Apache
   ##########################################################################
-  # Ce conteneur est un serveur web Apache avec PHP.
   php-apache:
     container_name: php_apache
     build: site # On utilise le Dockerfile du dossier site
-    ports:
-      - "80:80" # On expose le port 80 du conteneur
+    expose:
+      - "80" # Expose le port 80 uniquement sur le réseau interne
     volumes:
       - ./www:/var/www/html/ # On monte le dossier www du projet dans le dossier /var/www/html/ du conteneur
       - ./server/000-default.conf:/etc/apache2/sites-available/000-default.conf # On monte le fichier de configuration du serveur Apache
@@ -22,7 +20,6 @@ services:
   ##########################################################################
   # Base de données PostgreSQL
   ##########################################################################
-  # Ce conteneur est une base de données PostgreSQL.
   db:
     image: postgres:latest # On utilise l'image PostgreSQL
     container_name: db
@@ -38,7 +35,6 @@ services:
   ##########################################################################
   # Interface pour PostgreSQL
   ##########################################################################
-  # Ce conteneur est une interface web pour gérer la base de données.
   pgadmin:
     image: dpage/pgadmin4 # On utilise l'image PGAdmin
     container_name: pgadmin
@@ -52,19 +48,23 @@ services:
     networks:
       - backend # Conteneur connecté au réseau backend
 
+  ##########################################################################
+  # Nginx
+  ##########################################################################
   nginx:
     container_name: nginx
-    restart: unless-stopped
     image: nginx
+    restart: unless-stopped
     ports:
-        - "80:80"
-        - "443:443"
+      - "80:80"
+      - "443:443"
     depends_on:
-      - php-apache 
+      - php-apache
     volumes:
-        - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - /etc/letsencrypt:/etc/letsencrypt # Monte les certificats SSL
     networks:
       - backend
 
 networks:
-  backend: # On crée un réseau backend
+  backend:
