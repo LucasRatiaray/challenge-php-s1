@@ -321,4 +321,6 @@ class User extends SQL
         $stmt = $this->pdo->query("SELECT COUNT(*) FROM chall_user");
         return (int) $stmt->fetchColumn();
     }
+
+
 }

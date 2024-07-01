@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Core\Security;
+use App\Core\Security as Auth;
 use App\Core\View;
 use App\Models\Config;
 
@@ -17,8 +18,12 @@ class CustomizeController
             session_start();
         }
 
-        $this->checkLogin();
-    }
+        $security = new Auth();
+
+        if (!$security->isLogged()) {
+            echo "Vous devez être connecté";
+            return;
+        }    }
 
     public function showForm()
     {

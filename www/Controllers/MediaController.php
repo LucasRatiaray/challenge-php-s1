@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Core\Security as Auth;
 use App\Core\View;
 use App\Models\Media;
 
@@ -13,7 +14,14 @@ class MediaController
             session_start();
         }
 
-        $this->checkLogin();
+
+        $security = new Auth();
+
+        if (!$security->isLogged()) {
+            echo "Vous devez être connecté";
+            return;
+        }
+
     }
 
     private function checkLogin()
