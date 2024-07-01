@@ -12,8 +12,8 @@ class SQL
     protected $table;
     private $dbname = 'challenge';
     private $id;
-    private $db_user = "challengers";
-    private $db_pass = "qlslfho097IhOIHD8681298";
+    private $db_user = 'challengers';
+    private $db_pass = 'qlslfho097IhOIHD8681298';
 
     public function __construct()
     {
@@ -32,7 +32,7 @@ class SQL
     {
         if (self::$instance === null) {
             try {
-                self::$instance = new PDO("pgsql:host=db;dbname=".$this->dbname.";port=5432", "postgres", "postgres", [
+                self::$instance = new PDO("pgsql:host=db;dbname=".$this->dbname.";port=5432", $this->db_user, $this->db_pass, [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 ]);
